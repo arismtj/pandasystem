@@ -1,11 +1,7 @@
 import { DB } from "@/db/drizzle"
 import { deudaTable } from "@/db/schemas/deuda"
-import { pagoTable } from "@/db/schemas/pagos"
-import { servicioTable } from "@/db/schemas/servicios"
 import { ESTADO_INACTIVO } from "@/lib/constantes"
 import { DeudaDTO, FiltroDeudaDTO } from "@/lib/dto/deuda.dto"
-import { FiltroPagoDTO, PagoDTO } from "@/lib/dto/pagos.dto"
-import { FiltroServicioDTO, ServicioDTO } from "@/lib/dto/servicio.dto"
 import { and, count, eq, SQL } from "drizzle-orm"
 import { User } from "next-auth"
 
@@ -27,15 +23,15 @@ export async function obtenerDeudaPorId(idDeuda: number): Promise<DeudaDTO | nul
   if (deudasList && deudasList.length > 0) {
     const deuda = deudasList[0]
     return {
-      id: deuda.id ,  
-      fecha_creacion:deuda.fecha_creacion ,
-      fecha_limite: deuda.fecha_limite ,
-      fecha_notificacion: deuda.fecha_notificacion,
+      id: deuda.id,
+      fechaCreacion: deuda.fechaCreacion,
+      fechaLimite: deuda.fechaLimite,
+      fechaNotificacion: deuda.fechaNotificacion,
       estado: deuda.estado,
-      monto:deuda.monto,
-      ultimo_pago: deuda.ultimo_pago,
-      
-      idServicio: deuda.idServicio ,
+      monto: deuda.monto,
+      ultimoPago: deuda.ultimoPago,
+
+      idServicio: deuda.idServicio,
     }
   }
   return null
@@ -44,8 +40,7 @@ export async function obtenerDeudaPorId(idDeuda: number): Promise<DeudaDTO | nul
 function generarWhereFiltroDeudas(filtros: FiltroDeudaDTO): SQL[] {
   // Creamos una lista de condiciones sql que se usarán en el WHERE de la consulta sql
   const where: SQL[] = []
-  if (filtros.fecha_creacion) where.push(eq(deudaTable.fecha_creacion, filtros.fecha_creacion))
-  if (filtros.ultimo_pago) where.push(eq(deudaTable.ultimo_pago, filtros.ultimo_pago))
+  if (filtros.ultimoPago) where.push(eq(deudaTable.ultimoPago, filtros.ultimoPago))
   return where
 }
 
@@ -65,15 +60,15 @@ export async function listarDeudasPorFiltro(filtros: FiltroDeudaDTO): Promise<De
   const where = generarWhereFiltroDeudas(filtros)
 
   const data = await DB.select({
-    id: deudaTable.id ,  
-    fecha_creacion:deudaTable.fecha_creacion ,
-    fecha_limite: deudaTable.fecha_limite ,
-    fecha_notificacion: deudaTable.fecha_notificacion,
+    id: deudaTable.id,
+    fechaCreacion: deudaTable.fechaCreacion,
+    fechaLimite: deudaTable.fechaLimite,
+    fechaNotificacion: deudaTable.fechaNotificacion,
     estado: deudaTable.estado,
-    monto:deudaTable.monto,
-    ultimo_pago: deudaTable.ultimo_pago,
-    
-    idServicio: deudaTable.idServicio ,
+    monto: deudaTable.monto,
+    ultimoPago: deudaTable.ultimoPago,
+
+    idServicio: deudaTable.idServicio,
   }).from(deudaTable)
   return data
 }

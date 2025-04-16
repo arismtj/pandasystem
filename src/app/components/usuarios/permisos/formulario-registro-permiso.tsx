@@ -1,53 +1,57 @@
 'use client'
 
-import { registrarZonaAction } from "@/actions/zona.actions"
+import { registrarPermisoAction } from "@/actions/permiso.actions"
 import { ESTADO_ACTIVO } from "@/lib/constantes"
-import { ZonaDTO, ZonaSchemaDTO } from "@/lib/dto/zona.dto"
-import { Button, Flex, LoadingOverlay, Text, TextInput } from "@mantine/core"
+import { SelectDTO } from "@/lib/dto/common.dto"
+import { PermisoDTO, PermisoSchemaDTO } from "@/lib/dto/permiso.dto"
+import { Button, Flex, LoadingOverlay, MultiSelect, Text, TextInput } from "@mantine/core"
 import { useForm, yupResolver } from '@mantine/form'
 import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { SelectActivoInactivo } from "../custom-selects"
+import { SelectActivoInactivo } from "../../custom-selects"
 
 interface Props {
-  zona: ZonaDTO | null,
+  permiso: PermisoDTO | null,
+  modulos: SelectDTO[]
 }
 
-export function FormularioRegistroZona({ zona }: Props) {
+export function FormularioRegistroPermiso({ permiso, modulos }: Props) {
   const { back } = useRouter()
   const [isPending, setIsPending] = useState(false) // estado para mostrar un loading
 
 
-  const form = useForm<ZonaDTO>({
+  const form = useForm<PermisoDTO>({
     initialValues: {
-      id: zona?.id,
-      nombre: zona?.nombre || '',
-      estado: zona?.estado || ESTADO_ACTIVO,
+      id: permiso?.id,
+      nombre: permiso?.nombre || '',
+      // @ts-expect-error Lo ignoramos al crear uno nuevo
+      idsModulo: permiso?.idsModulo?.map(item => item.toString()) || [],
+      estado: permiso?.estado || ESTADO_ACTIVO,
     },
-    validate: yupResolver(ZonaSchemaDTO)
+    validate: yupResolver(PermisoSchemaDTO)
   })
 
   function onCancelar() {
     back()
   }
 
-  function onSubmitZona(data: any) {
+  function onSubmitPermiso(data: any) {
     modals.openConfirmModal({
       title: 'Confirmar',
       centered: true,
-      children: (<Text size="sm">¿Desea registrar la zona?</Text>),
+      children: (<Text size="sm">¿Desea registrar el permiso?</Text>),
       labels: { confirm: 'Registrar', cancel: 'Cancelar' },
       onConfirm: async () => {
         setIsPending(true)
-        const resp = await registrarZonaAction(data)
+        const resp = await registrarPermisoAction(data)
         if (resp?.ok) {
           notifications.show({
             title: 'Completado',
             withBorder: true,
             color: 'green',
-            message: 'Se ha registrado exitosamente la zona'
+            message: 'Se ha registrado exitosamente el permiso'
           })
           back()
         }
@@ -59,7 +63,7 @@ export function FormularioRegistroZona({ zona }: Props) {
   return <>
     <LoadingOverlay visible={isPending} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
 
-    <form onSubmit={form.onSubmit(onSubmitZona)}>
+    <form onSubmit={form.onSubmit(onSubmitPermiso)}>
 
       <TextInput
         withAsterisk
@@ -68,7 +72,14 @@ export function FormularioRegistroZona({ zona }: Props) {
         {...form.getInputProps('nombre')}
       />
 
-      {zona?.id && <SelectActivoInactivo
+      <MultiSelect
+        data={modulos}
+        label="Módulos permitidos"
+        key={form.key('idsModulo')}
+        {...form.getInputProps('idsModulo')}
+      />
+
+      {permiso?.id && <SelectActivoInactivo
         withAsterisk
         label="Estado"
         {...form.getInputProps('estado')}

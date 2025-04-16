@@ -28,7 +28,6 @@ export function FormularioRegistroUsuario({ usuario, permisos }: Props) {
       username: usuario?.username || '',
       nombres: usuario?.nombres || '',
       apellidos: usuario?.apellidos || '',
-      email: usuario?.email || '',
       numeroTelefono: usuario?.numeroTelefono || '',
       // @ts-expect-error Lo ignoramos al crear uno nuevo
       idPermiso: usuario?.idPermiso.toString(),
@@ -90,7 +89,7 @@ export function FormularioRegistroUsuario({ usuario, permisos }: Props) {
         {...form.getInputProps('apellidos')}
       />
 
-<TextInput
+      <TextInput
         withAsterisk
         label="Email"
         key={form.key('email')}

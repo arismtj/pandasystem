@@ -1,9 +1,7 @@
 import { DB } from "@/db/drizzle"
 import { pagoTable } from "@/db/schemas/pagos"
-import { servicioTable } from "@/db/schemas/servicios"
 import { ESTADO_INACTIVO } from "@/lib/constantes"
 import { FiltroPagoDTO, PagoDTO } from "@/lib/dto/pagos.dto"
-import { FiltroServicioDTO, ServicioDTO } from "@/lib/dto/servicio.dto"
 import { and, count, eq, SQL } from "drizzle-orm"
 import { User } from "next-auth"
 
@@ -25,14 +23,14 @@ export async function obtenerPagoPorId(idPago: number): Promise<PagoDTO | null> 
   if (pagosList && pagosList.length > 0) {
     const pago = pagosList[0]
     return {
-      id: pago.id ,  
-      fecha_pago: pago.fecha_pago ,
-      monto: pago.monto ,
-      forma_pago: pago.forma_pago ,
-      estado: pago.estado ,
-     
-       idServicio: pago.idServicio,
-       idDeuda: pago.idDeuda,
+      id: pago.id,
+      fechaPago: pago.fechaPago,
+      monto: pago.monto,
+      formaPago: pago.formaPago,
+      estado: pago.estado,
+
+      idServicio: pago.idServicio,
+      idDeuda: pago.idDeuda,
     }
   }
   return null
@@ -41,8 +39,7 @@ export async function obtenerPagoPorId(idPago: number): Promise<PagoDTO | null> 
 function generarWhereFiltroPagos(filtros: FiltroPagoDTO): SQL[] {
   // Creamos una lista de condiciones sql que se usarán en el WHERE de la consulta sql
   const where: SQL[] = []
-  if (filtros.fecha_pago) where.push(eq(pagoTable.fecha_pago, filtros.fecha_pago))
-  if (filtros.forma_pago) where.push(eq(pagoTable.forma_pago, filtros.forma_pago))
+  if (filtros.formaPago) where.push(eq(pagoTable.formaPago, filtros.formaPago))
   return where
 }
 
@@ -62,14 +59,14 @@ export async function listarPagosPorFiltro(filtros: FiltroPagoDTO): Promise<Pago
   const where = generarWhereFiltroPagos(filtros)
 
   const data = await DB.select({
-    id: pagoTable.id ,  
-    fecha_pago: pagoTable.fecha_pago ,
-    monto: pagoTable.monto ,
-    forma_pago: pagoTable.forma_pago ,
-    estado: pagoTable.estado ,
-   
-     idServicio: pagoTable.idServicio,
-     idDeuda: pagoTable.idDeuda,
+    id: pagoTable.id,
+    fechaPago: pagoTable.fechaPago,
+    monto: pagoTable.monto,
+    formaPago: pagoTable.formaPago,
+    estado: pagoTable.estado,
+
+    idServicio: pagoTable.idServicio,
+    idDeuda: pagoTable.idDeuda,
   }).from(pagoTable)
   return data
 }

@@ -62,7 +62,7 @@ export function NavLinksItems({ links }: NavLinksItemsProps) {
   return (
     links.map((item) => {
 
-      const Icon = useMemo(() => getDynamicIcon(item.icono as TIconType), [item.icono])
+      const Icon = getDynamicIcon(item.icono as TIconType)
       return <Link
         className={classes.link}
         data-active={item.url === currentPath || undefined}

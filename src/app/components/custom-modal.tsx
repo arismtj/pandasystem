@@ -6,7 +6,7 @@ interface Props {
   children: React.ReactNode
   onClose?: () => void
   title?: string
-  size?: MantineSize
+  size?: MantineSize | number
 }
 
 export function OpenedModal({ children, onClose, ...props }: Props) {

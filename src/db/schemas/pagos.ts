@@ -1,20 +1,18 @@
 import { ESTADO_ACTIVO } from "@/lib/constantes"
 import { InferInsertModel, InferSelectModel, sql } from "drizzle-orm"
-import { char, datetime, foreignKey, int, mysqlTable, primaryKey, varchar } from "drizzle-orm/mysql-core"
+import { char, datetime, decimal, foreignKey, int, mysqlTable, primaryKey, varchar } from "drizzle-orm/mysql-core"
 import { servicioTable } from "./servicios"
 import { deudaTable } from "./deuda"
 
 // Tabla de servicios
 export const pagoTable = mysqlTable('pago', {
-  id: int().autoincrement().notNull(),  
- fecha_pago: varchar({length:100}).notNull(),
- monto: varchar({length:100}).notNull(),
- forma_pago:varchar({length:10}).notNull(),
-
+  id: int().autoincrement().notNull(),
+  fechaPago: datetime('fecha_pago', {}).notNull(),
+  monto: decimal({ mode: 'number' }).notNull(),
+  formaPago: varchar('forma_pago', { length: 30 }).notNull(),
 
   idServicio: int('id_servicio').notNull(),
   idDeuda: int('id_deuda').notNull(),
-
 
   // Campos de auditoria
   estado: char({ length: 1 }).notNull().default(ESTADO_ACTIVO),
@@ -26,9 +24,7 @@ export const pagoTable = mysqlTable('pago', {
 }, (table) => [
   primaryKey({ name: 'pago_id_pk', columns: [table.id] }),
   foreignKey({ name: 'pago_id_servicio_fk', columns: [table.idServicio], foreignColumns: [servicioTable.id] }),
-  foreignKey({name: 'pago_id_deuda_fk', columns:[table.idDeuda], foreignColumns:[deudaTable.id] })
-  
-
+  foreignKey({ name: 'pago_id_deuda_fk', columns: [table.idDeuda], foreignColumns: [deudaTable.id] })
 ])
 
 

@@ -9,18 +9,22 @@ import { revalidatePath } from "next/cache"
 
 type RespuestaRegistro = RespuestaDTO<ClienteDTO>
 
-export async function registrarClienteAction(data: any): Promise<RespuestaRegistro | undefined> {
+export async function registrarClienteAction(data: any, fachada?: File | null): Promise<RespuestaRegistro | undefined> {
   const respuesta: RespuestaRegistro = { ok: true }
   const session = await auth() // obtenemos la sesion del usuario
 
   try {
     const clienteDTO = await ClienteSchemaDTO.validate(data)
 
-    const clienteGuardado = await registrarCliente(clienteDTO, session?.user!)
+    if (!clienteDTO.id && !fachada) {
+      throw new Error('La foto de la fachada es requerida')
+    }
+
+    const clienteGuardado = await registrarCliente(clienteDTO, session?.user!, fachada)
 
     respuesta.data = clienteGuardado
   } catch (e: any) {
-    return { ok: false, error: e.errors }
+    return { ok: false, error: e.errors || e.message }
   }
 
   revalidatePath('/clientes')

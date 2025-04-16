@@ -3,6 +3,7 @@ import { clienteTable } from "@/db/schemas/cliente"
 import { zonaTable } from "@/db/schemas/zona"
 import { ESTADO_INACTIVO } from "@/lib/constantes"
 import { ClienteDTO, FiltroClienteDTO } from "@/lib/dto/cliente.dto"
+import { eliminarArchivo, guardarArchivo } from "@/lib/files.utils"
 import { and, count, eq, like, SQL } from "drizzle-orm"
 import { User } from "next-auth"
 
@@ -15,22 +16,19 @@ export async function obtenerClientePorId(idCliente: number): Promise<ClienteDTO
     const cliente = clientesList[0]
     return {
       id: cliente.id,
-      ip: cliente.ip,
       nombres: cliente.nombres,
       apellidos: cliente.apellidos,
-      numero_dni: cliente.numero_dni,
-      numeroTelefono: cliente.numeroTelefono || null,    
-      direccion: cliente.direccion,
+      dni: cliente.dni,
+      celular: cliente.celular || null,
       departamento: cliente.departamento,
       provincia: cliente.provincia,
       distrito: cliente.distrito,
-      referencia: cliente.referencia,
       fachada: cliente.fachada,
+      idZona: cliente.idZona,
+      direccion: cliente.direccion,
+      referencia: cliente.referencia,
       coordenadas: cliente.coordenadas,
       estado: cliente.estado,
-      idZona: cliente.idZona,
-      
-
     }
   }
   return null
@@ -63,20 +61,20 @@ export async function listarClientesPorFiltro(filtros: FiltroClienteDTO): Promis
 
   const data = await DB.select({
     id: clienteTable.id,
-      ip: clienteTable.ip,
-      nombres: clienteTable.nombres,
-      apellidos: clienteTable.apellidos,
-      numero_dni: clienteTable.numero_dni,
-      numeroTelefono: clienteTable.numeroTelefono || null,    
-      direccion: clienteTable.direccion,
-      departamento: clienteTable.departamento,
-      provincia: clienteTable.provincia,
-      distrito: clienteTable.distrito,
-      referencia: clienteTable.referencia,
-      fachada: clienteTable.fachada,
-      coordenadas: clienteTable.coordenadas,
-      estado: clienteTable.estado,
-      idZona: clienteTable.idZona,
+    nombres: clienteTable.nombres,
+    apellidos: clienteTable.apellidos,
+    dni: clienteTable.dni,
+    celular: clienteTable.celular || null,
+    departamento: clienteTable.departamento,
+    provincia: clienteTable.provincia,
+    distrito: clienteTable.distrito,
+    fachada: clienteTable.fachada,
+    idZona: clienteTable.idZona,
+    nombreZona: zonaTable.nombre,
+    direccion: clienteTable.direccion,
+    referencia: clienteTable.referencia,
+    coordenadas: clienteTable.coordenadas,
+    estado: clienteTable.estado,
   }).from(clienteTable)
     .leftJoin(zonaTable, eq(zonaTable.id, clienteTable.idZona))
     .where(and(...where))
@@ -84,8 +82,22 @@ export async function listarClientesPorFiltro(filtros: FiltroClienteDTO): Promis
   return data
 }
 
-export async function registrarCliente(clienteDTO: ClienteDTO, authUser: User): Promise<ClienteDTO> {
+export async function registrarCliente(clienteDTO: ClienteDTO, authUser: User, fotoFachada?: File | null): Promise<ClienteDTO> {
   const { id, ...datosCliente } = clienteDTO
+
+  if (fotoFachada) {
+    const archivo = await guardarArchivo(fotoFachada)
+    datosCliente.fachada = archivo
+
+    // Si es un cliente existente, eliminamos la foto de la fachada cargada anteriormente
+    if (clienteDTO.id) {
+      const clienteFachada = await DB.select({
+        fachada: clienteTable.fachada
+      }).from(clienteTable).where(eq(clienteTable.id, clienteDTO.id))
+
+      eliminarArchivo(clienteFachada[0].fachada)
+    }
+  }
 
   /** 
    * Si el campo id en clienteDTO tiene valor, entonces el cliente ya existe y

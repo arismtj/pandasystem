@@ -42,20 +42,19 @@ export async function crearSesion(sessionId: string, idUsuario: number): Promise
 }
 
 export async function validarTokenSesion(sessionId: string): Promise<SessionValidationResult> {
-  const result = await DB
-    .select({
-      user: {
-        id: usuarioTable.id,
-        username: usuarioTable.username,
-        nombres: usuarioTable.nombres,
-        apellidos: usuarioTable.apellidos,
-        numeroTelefono: usuarioTable.numeroTelefono,
-        estado: usuarioTable.estado,
-        idPermiso: usuarioTable.idPermiso
-      },
-      session: sesionTable
-    })
-    .from(sesionTable)
+  const result = await DB.select({
+    user: {
+      id: usuarioTable.id,
+      username: usuarioTable.username,
+      nombres: usuarioTable.nombres,
+      apellidos: usuarioTable.apellidos,
+      email: usuarioTable.email,
+      numeroTelefono: usuarioTable.numeroTelefono,
+      estado: usuarioTable.estado,
+      idPermiso: usuarioTable.idPermiso
+    },
+    session: sesionTable
+  }).from(sesionTable)
     .innerJoin(usuarioTable, eq(sesionTable.idUsuario, usuarioTable.id))
     .where(eq(sesionTable.id, sessionId))
 

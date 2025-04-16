@@ -1,3 +1,8 @@
 @import "tailwind-preset-mantine";
 
-
+.sticky-l-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background-color: var(--mantine-color-body);
+}

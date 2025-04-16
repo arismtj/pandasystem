@@ -10,7 +10,7 @@ import { ESTADO_ACTIVO } from "@/lib/constantes";
 // Tabla de usuarios
 export const usuarioTable = mysqlTable('usuario', {
   id: int().autoincrement().notNull(),
-  username: varchar({ length: 50 }).notNull().unique(),
+  username: varchar('login', { length: 50 }).notNull().unique(),
   password: varchar({ length: 100 }).notNull(),
   nombres: varchar({ length: 100 }).notNull(),
   apellidos: varchar({ length: 100 }).notNull(),

@@ -30,7 +30,7 @@ export default async function RegistroClientePage(props: Props) {
   const zonasSelect = await listarZonasSelect()
 
   return (
-    <OpenedModal title="Registro de clientes">
+    <OpenedModal title="Registro de clientes" size="xl">
       <FormularioRegistroCliente
         zonas={zonasSelect}
         cliente={clienteDTO}

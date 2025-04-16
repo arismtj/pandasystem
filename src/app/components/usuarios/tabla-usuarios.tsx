@@ -8,7 +8,7 @@ interface Props extends FiltroUsuarioDTO {
 
 }
 
-export const TABLA_USUARIOS_COLS = ['', 'Cod', 'Nombres', 'Apellidos',  'Nombre usuario', 'email', 'Teléfono', 'Permiso']
+export const TABLA_USUARIOS_COLS = ['', 'Cod', 'Login', 'Nombres', 'Apellidos', 'Email', 'Teléfono', 'Permiso']
 
 export default async function TablaUsuarios(props: Props) {
 
@@ -16,7 +16,6 @@ export default async function TablaUsuarios(props: Props) {
     username: props.username,
     nombres: props.nombres,
     apellidos: props.apellidos,
-   
     page: props.page || 1,
     rowsPerPage: props.rowsPerPage
   })
@@ -49,7 +48,6 @@ export default async function TablaUsuarios(props: Props) {
             <TableTd>{item.nombres}</TableTd>
             <TableTd>{item.apellidos}</TableTd>
             <TableTd>{item.username}</TableTd>
-            <TableTd>{item.email}</TableTd>
             <TableTd>{item.numeroTelefono}</TableTd>
             <TableTd>{item.nombrePermiso}</TableTd>
           </TableTr>

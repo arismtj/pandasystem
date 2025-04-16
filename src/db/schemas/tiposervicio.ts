@@ -1,14 +1,14 @@
 import { ESTADO_ACTIVO } from "@/lib/constantes"
 import { InferInsertModel, InferSelectModel, sql } from "drizzle-orm"
-import { char, datetime, foreignKey, int, mysqlTable, primaryKey, varchar } from "drizzle-orm/mysql-core"
+import { char, datetime, decimal, foreignKey, int, mysqlTable, primaryKey, varchar } from "drizzle-orm/mysql-core"
 import { clienteTable } from "./cliente"
 
 // Tabla de servicios
 export const tiposervicioTable = mysqlTable('tiposervicio', {
   id: int().autoincrement().notNull(),
   nombre: varchar({ length: 50 }).notNull(),
-  frecuencia: varchar({length:150}).notNull(),
-  precio_unitario: varchar({ length: 100 }).notNull(),
+  frecuencia: char({ length: 2 }).notNull(),
+  precioUnitario: decimal('precio_unitario', { mode: 'number' }).notNull(),
   idCliente: int('id_cliente').notNull(),
 
   // Campos de auditoria

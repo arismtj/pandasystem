@@ -2,7 +2,6 @@ import { DB } from "@/db/drizzle"
 import { servicioTable } from "@/db/schemas/servicios"
 import { tiposervicioTable } from "@/db/schemas/tiposervicio"
 import { ESTADO_INACTIVO } from "@/lib/constantes"
-import { FiltroServicioDTO, ServicioDTO } from "@/lib/dto/servicio.dto"
 import { FiltroTipoServicioDTO, TipoServicioDTO } from "@/lib/dto/tiposervicio.dto"
 import { and, count, eq, SQL } from "drizzle-orm"
 import { User } from "next-auth"
@@ -28,10 +27,9 @@ export async function obtenerTipoServicioPorId(idTipoServicio: number): Promise<
       id: tiposervicio.id,
       nombre: tiposervicio.nombre,
       estado: tiposervicio.estado,
-     frecuencia: tiposervicio.frecuencia,
-      precio_unitario: tiposervicio.precio_unitario,
+      frecuencia: tiposervicio.frecuencia,
+      precioUnitario: tiposervicio.precioUnitario,
       idCliente: tiposervicio.idCliente,
-
     }
   }
   return null
@@ -41,7 +39,7 @@ function generarWhereFiltroTipoServicios(filtros: FiltroTipoServicioDTO): SQL[] 
   // Creamos una lista de condiciones sql que se usarán en el WHERE de la consulta sql
   const where: SQL[] = []
   if (filtros.nombre) where.push(eq(tiposervicioTable.nombre, filtros.nombre))
-    if (filtros.precio_unitario) where.push(eq(tiposervicioTable.precio_unitario, filtros.precio_unitario))
+  if (filtros.precioUnitario) where.push(eq(tiposervicioTable.precioUnitario, filtros.precioUnitario))
   return where
 }
 
@@ -62,12 +60,12 @@ export async function listarTipoServiciosPorFiltro(filtros: FiltroTipoServicioDT
 
   const data = await DB.select({
     id: tiposervicioTable.id,
-      nombre: tiposervicioTable.nombre,
-      estado: tiposervicioTable.estado,
-     frecuencia: tiposervicioTable.frecuencia,
-      precio_unitario: tiposervicioTable.precio_unitario,
-      idCliente: tiposervicioTable.idCliente,
-      
+    nombre: tiposervicioTable.nombre,
+    estado: tiposervicioTable.estado,
+    frecuencia: tiposervicioTable.frecuencia,
+    precioUnitario: tiposervicioTable.precioUnitario,
+    idCliente: tiposervicioTable.idCliente,
+
   }).from(tiposervicioTable)
   return data
 }

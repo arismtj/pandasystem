@@ -15,6 +15,13 @@
       "when": 1744564013445,
       "tag": "0001_usuario",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1744774344396,
+      "tag": "0002_correccion_campos",
+      "breakpoints": true
     }
   ]
 }

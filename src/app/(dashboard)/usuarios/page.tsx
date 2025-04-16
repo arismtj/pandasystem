@@ -20,12 +20,12 @@ interface Props {
 
 export default async function UsuariosPage(props: Props) {
   const session = await auth()
-  
-    // Validamos que el usuario tenga acceso a este módulo sino mostramos error
-    const tienePermiso = await usuarioTienePermiso(+session?.user.id!, '/usuarios')
-    if (!tienePermiso) {
-      return <Page403 />
-    }
+
+  // Validamos que el usuario tenga acceso a este módulo sino mostramos error
+  const tienePermiso = await usuarioTienePermiso(+session?.user.id!, '/usuarios')
+  if (!tienePermiso) {
+    return <Page403 />
+  }
 
   const searchParams = await props.searchParams
 
@@ -45,6 +45,10 @@ export default async function UsuariosPage(props: Props) {
     <FiltrosUsuario>
       <Link href="/usuarios/registro/nuevo">
         <Button>Nuevo</Button>
+      </Link>
+
+      <Link href="/usuarios/permisos" style={{ marginLeft: 'auto' }}>
+        <Button color="violet">Gestionar permisos</Button>
       </Link>
     </FiltrosUsuario>
     <br />

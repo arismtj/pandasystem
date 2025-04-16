@@ -1,6 +1,7 @@
 'use client'
 
-import { Button, Grid, GridCol, TextInput } from "@mantine/core"
+import { SelectDTO } from "@/lib/dto/common.dto"
+import { Button, Flex, Grid, GridCol, Select, TextInput } from "@mantine/core"
 import { IconClearAll, IconSearch } from "@tabler/icons-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { FormEvent } from "react"
@@ -9,7 +10,7 @@ interface Props {
   children?: React.ReactNode
 }
 
-export default function FiltrosUsuario({ children }: Props) {
+export default function FiltrosPermiso({ children }: Props) {
   const searchParams = useSearchParams()
   const pathname = usePathname()
   const { replace } = useRouter()
@@ -34,9 +35,7 @@ export default function FiltrosUsuario({ children }: Props) {
 
   function limpiarFiltros() {
     const params = new URLSearchParams(searchParams)
-    params.set('username', '')
-    params.set('nombres', '')
-    params.set('apellidos', '')
+    params.set('nombre', '')
 
     replace(`${pathname}?${params}`)
   }
@@ -45,30 +44,13 @@ export default function FiltrosUsuario({ children }: Props) {
     <Grid>
       <GridCol span={{ md: 4 }}>
         <TextInput
-          className="w-full md:w-[30%]"
-          defaultValue={searchParams.get('username')?.toString()}
-          label="Nombre de usuario" name="username"
-        />
-      </GridCol>
-
-      <GridCol span={{ md: 4 }}>
-        <TextInput
-          className="w-full md:w-[30%]"
-          defaultValue={searchParams.get('nombres')?.toString()}
-          label="Nombres" name="nombres"
-        />
-      </GridCol>
-
-      <GridCol span={{ md: 4 }}>
-        <TextInput
-          className="w-full md:w-[30%]"
-          defaultValue={searchParams.get('apellidos')?.toString()}
-          label="Apellidos" name="apellidos"
+          defaultValue={searchParams.get('nombre')?.toString()}
+          label="Nombre" name="nombre"
         />
       </GridCol>
     </Grid>
     <br />
-    <div className="flex flex-row gap-2">
+    <Flex direction="row" gap="md">
       <Button leftSection={<IconSearch />} type="submit">
         Buscar
       </Button>
@@ -78,6 +60,7 @@ export default function FiltrosUsuario({ children }: Props) {
       </Button>
 
       {children}
-    </div>
+    </Flex>
+
   </form>
 }

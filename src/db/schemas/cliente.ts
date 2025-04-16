@@ -10,16 +10,15 @@ import { text } from "stream/consumers"
 // Tabla de usuarios
 export const clienteTable = mysqlTable('cliente', {
   id: int().autoincrement().notNull(),
-  ip: varchar({ length: 100 }).notNull(),
   nombres: varchar({ length: 100 }).notNull(),
   apellidos: varchar({ length: 100 }).notNull(),
-  numero_dni: varchar({ length: 8 }).notNull(),
-  numeroTelefono: varchar('numero_telefono', { length: 50 }), // Aqui se mapea numeroTelefono en camelCase pero el nombre el BD es snake_case (numero_telefono)
+  dni: varchar({ length: 8 }).notNull(),
+  celular: varchar({ length: 50 }),
   direccion: varchar({ length: 250 }).notNull(),
   departamento: varchar({length: 150}).notNull(),
   provincia: varchar({length: 150}).notNull(),
   distrito: varchar({length: 150}).notNull(),
-  referencia: varchar({ length: 250 }).notNull(),  
+  referencia: varchar({ length: 250 }),  
   coordenadas: varchar({ length: 250 }).notNull(),
   fachada: varchar({length:250}).notNull(),
   idZona: int('id_zona').notNull(),

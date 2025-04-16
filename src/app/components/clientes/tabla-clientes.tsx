@@ -11,7 +11,7 @@ interface Props extends FiltroClienteDTO {
 
 }
 
-export const TABLA_CLIENTES_COLS = ['', 'Cod.', 'IP', 'Nombres', 'Apellidos', 'Numero DNI', 'Teléfono', 'Zona', 'Dirección', 'Departamento', 'Provincia', 'Distrito', 'Referencia', 'Coordenadas','Fachada', 'Estado']
+export const TABLA_CLIENTES_COLS = ['', 'Cod.', 'Nombres', 'Apellidos', 'Dirección', 'Distrito-Prov-Dep', 'Zona', 'Coordenadas', 'Estado']
 
 export default async function TablaClientes(props: Props) {
 
@@ -38,7 +38,7 @@ export default async function TablaClientes(props: Props) {
       <TableTbody>
         {data.map((item, index) => {
           return <TableTr key={`${index}-${item.id || ''}`}>
-            <TableTd miw={80}>
+            <TableTd miw={80} className="sticky-l-col">
               <Tooltip label="Editar cliente">
                 <Link href={"/clientes/registro/" + item.id}>
                   <ActionIcon size="sm">
@@ -60,18 +60,12 @@ export default async function TablaClientes(props: Props) {
               </>}
             </TableTd>
             {/* <TableTd>{item.id}</TableTd> */}
-            <TableTd>{item.ip}</TableTd>
+            <TableTd>{item.id}</TableTd>
             <TableTd miw={150}>{item.nombres}</TableTd>
             <TableTd miw={150}>{item.apellidos}</TableTd>
-            <TableTd miw={120}>{item.numero_dni}</TableTd>
-            <TableTd miw={200}>{item.direccion}</TableTd>
-            <TableTd miw={200}>{item.departamento}</TableTd>
-            <TableTd miw={200}>{item.provincia}</TableTd>
-            <TableTd miw={200}>{item.distrito}</TableTd>
-            <TableTd miw={120}>{item.numeroTelefono}</TableTd>
-            <TableTd miw={150}>{item.nombreZona}</TableTd>
-            <TableTd miw={200}>{item.fachada}</TableTd>
-            <TableTd miw={200}>{item.referencia}</TableTd>
+            <TableTd miw={250}>{item.direccion}</TableTd>
+            <TableTd miw={240}>{item.distrito} - {item.provincia}-{item.departamento}</TableTd>
+            <TableTd miw={200}>{item.nombreZona}</TableTd>
             <TableTd>{item.coordenadas}</TableTd>
             <TableTd>{item.estado === ESTADO_ACTIVO ? 'Activo' : 'Inactivo'}</TableTd>
           </TableTr>

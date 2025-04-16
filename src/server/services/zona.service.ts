@@ -75,7 +75,7 @@ export async function registrarZona(zonaDTO: ZonaDTO, authUser: User): Promise<Z
   const { id, ...datosZona } = zonaDTO
 
   /** 
-   * Si el campo id en clienteDTO tiene valor, entonces el cliente ya existe y
+   * Si el campo id en zonaDTO tiene valor, entonces la zona ya existe y
    * debemos hacer una actualizacion de datos
    */
   if (zonaDTO.id) {

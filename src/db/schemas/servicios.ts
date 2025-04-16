@@ -8,18 +8,17 @@ import { tiposervicioTable } from "./tiposervicio"
 export const servicioTable = mysqlTable('servicio', {
   id: int().autoincrement().notNull(),
   nombre: varchar({ length: 50 }).notNull(),
- fecha_inicio: varchar({length:100}).notNull(),
- fecha_fin: varchar({length:100}).notNull(),
- unidad:varchar({length:10}).notNull(),
- precio_unidad: varchar({ length: 100 }).notNull(),
- ultimo_pago:varchar({ length: 100 }).notNull(),
- ultimo_deuda:varchar({ length: 100 }).notNull(),
- estado_deuda:varchar({ length: 100 }).notNull(),
+  fechaInicio: varchar('fecha_inicio', { length: 100 }).notNull(),
+  fechaFin: varchar('fecha_fin', { length: 100 }).notNull(),
+  unidad: varchar({ length: 10 }).notNull(),
+  precioUnidad: varchar('precio_unidad', { length: 100 }).notNull(),
+  ultimoPago: varchar('ultimo_pago', { length: 100 }).notNull(),
+  ultimaDeuda: varchar('ultima_deuda', { length: 100 }).notNull(),
+  estadoDeuda: varchar('estado_deuda', { length: 100 }).notNull(),
+  numeroIp: varchar('numero_ip', { length: 100 }),
 
   idCliente: int('id_cliente').notNull(),
-  idTipoServicio: int('id_tiposervicio').notNull(),
-
-
+  idTipoServicio: int('id_tipo_servicio').notNull(),
 
   // Campos de auditoria
   estado: char({ length: 1 }).notNull().default(ESTADO_ACTIVO),
@@ -32,9 +31,6 @@ export const servicioTable = mysqlTable('servicio', {
   primaryKey({ name: 'servicio_id_pk', columns: [table.id] }),
   foreignKey({ name: 'servicio_id_cliente_fk', columns: [table.idCliente], foreignColumns: [clienteTable.id] }),
   foreignKey({ name: 'servicio_id_tiposervicio_fk', columns: [table.idTipoServicio], foreignColumns: [tiposervicioTable.id] })
-
-  
-
 ])
 
 

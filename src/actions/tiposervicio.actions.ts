@@ -4,7 +4,6 @@ import { RespuestaDTO } from "@/lib/dto/common.dto"
 import { TipoServicioDTO, TipoServicioSchemaDTO } from "@/lib/dto/tiposervicio.dto"
 
 import { auth } from "@/server/auth/auth"
-import { anularDeuda, registrarDeuda } from "@/server/services/deuda.service"
 import { anularTipoServicio, registrarTipoServicio } from "@/server/services/tiposervicio.service"
 import { revalidatePath } from "next/cache"
 
