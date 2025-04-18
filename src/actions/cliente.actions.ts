@@ -1,10 +1,10 @@
 'use server'
 
 import { ClienteDTO, ClienteSchemaDTO } from "@/lib/dto/cliente.dto"
-import { RespuestaDTO } from "@/lib/dto/common.dto"
+import { RespuestaDTO, SelectDTO } from "@/lib/dto/common.dto"
 
 import { auth } from "@/server/auth/auth"
-import { anularCliente, registrarCliente } from "@/server/services/cliente.service"
+import { anularCliente, listarClientesSelect, registrarCliente } from "@/server/services/cliente.service"
 import { revalidatePath } from "next/cache"
 
 type RespuestaRegistro = RespuestaDTO<ClienteDTO>
@@ -45,4 +45,11 @@ export async function anularClienteAction(idCliente: number): Promise<RespuestaD
 
   revalidatePath('/clientes')
   return respuesta
+}
+
+export async function autocompletarCliente(query: string, excluirId?: number | string): Promise<SelectDTO[]> {
+  if (query.length < 3) {
+    return []
+  }
+  return listarClientesSelect(query, { excluirId })
 }

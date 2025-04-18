@@ -1,8 +1,10 @@
 import { DB } from "@/db/drizzle"
+import { clienteTable } from "@/db/schemas/cliente"
 import { servicioTable } from "@/db/schemas/servicios"
+import { tiposervicioTable } from "@/db/schemas/tiposervicio"
 import { ESTADO_INACTIVO } from "@/lib/constantes"
 import { FiltroServicioDTO, ServicioDTO } from "@/lib/dto/servicio.dto"
-import { and, count, eq, SQL } from "drizzle-orm"
+import { and, count, eq, sql, SQL } from "drizzle-orm"
 import { User } from "next-auth"
 
 export async function listarModulosServicio(idServicio: number) {
@@ -23,7 +25,6 @@ export async function obtenerServicioPorId(idServicio: number): Promise<Servicio
     const servicio = serviciosList[0]
     return {
       id: servicio.id,
-      nombre: servicio.nombre,
       fechaInicio: servicio.fechaInicio,
       fechaFin: servicio.fechaFin,
       estado: servicio.estado,
@@ -44,7 +45,6 @@ export async function obtenerServicioPorId(idServicio: number): Promise<Servicio
 function generarWhereFiltroServicios(filtros: FiltroServicioDTO): SQL[] {
   // Creamos una lista de condiciones sql que se usarán en el WHERE de la consulta sql
   const where: SQL[] = []
-  if (filtros.nombre) where.push(eq(servicioTable.nombre, filtros.nombre))
   return where
 }
 
@@ -65,7 +65,6 @@ export async function listarServiciosPorFiltro(filtros: FiltroServicioDTO): Prom
 
   const data = await DB.select({
     id: servicioTable.id,
-    nombre: servicioTable.nombre,
     fechaInicio: servicioTable.fechaInicio,
     fechaFin: servicioTable.fechaFin,
     estado: servicioTable.estado,
@@ -78,7 +77,14 @@ export async function listarServiciosPorFiltro(filtros: FiltroServicioDTO): Prom
 
     idCliente: servicioTable.idCliente,
     idTipoServicio: servicioTable.idTipoServicio,
+
+    nombreCliente: sql<string>`concat(${clienteTable.nombres}, ' ', ${clienteTable.apellidos})`,
+    direccionCliente: clienteTable.direccion,
+    nombreTipoServicio: tiposervicioTable.nombre,
+    frecuenciaServicio: tiposervicioTable.frecuencia,
   }).from(servicioTable)
+    .innerJoin(clienteTable, eq(clienteTable.id, servicioTable.idCliente))
+    .innerJoin(tiposervicioTable, eq(tiposervicioTable.id, servicioTable.idTipoServicio))
 
   return data
 }

@@ -3,7 +3,7 @@ import { moduloTable, permisoModuloTable } from "@/db/schemas/permiso"
 import { SelectDTO } from "@/lib/dto/common.dto"
 import { eq } from "drizzle-orm"
 
-export async function listarModulosSelect(soloActivos = true): Promise<SelectDTO[]> {
+export async function listarModulosSelect(): Promise<SelectDTO[]> {
   const modulosList = await DB.select({
     id: moduloTable.id,
     nombre: moduloTable.nombre,

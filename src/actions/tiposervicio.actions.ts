@@ -1,15 +1,15 @@
 'use server'
 
-import { RespuestaDTO } from "@/lib/dto/common.dto"
+import { RespuestaDTO, SelectDTO2 } from "@/lib/dto/common.dto"
 import { TipoServicioDTO, TipoServicioSchemaDTO } from "@/lib/dto/tiposervicio.dto"
 
 import { auth } from "@/server/auth/auth"
-import { anularTipoServicio, registrarTipoServicio } from "@/server/services/tiposervicio.service"
+import { anularTipoServicio, listarTiposServicioSelect, registrarTipoServicio } from "@/server/services/tiposervicio.service"
 import { revalidatePath } from "next/cache"
 
 type RespuestaRegistro = RespuestaDTO<TipoServicioDTO>
 
-export async function registrarTipoServicioAction(_prevState: RespuestaRegistro | undefined, data: any): Promise<RespuestaRegistro | undefined> {
+export async function registrarTipoServicioAction(data: any): Promise<RespuestaRegistro | undefined> {
   const respuesta: RespuestaRegistro = { ok: true }
   const session = await auth()
 
@@ -23,7 +23,7 @@ export async function registrarTipoServicioAction(_prevState: RespuestaRegistro 
     return { ok: false, error: e.errors }
   }
 
-  revalidatePath('/tiposervicio')
+  revalidatePath('/servicios/tipos-servicio')
   return respuesta
 }
 
@@ -39,6 +39,10 @@ export async function anularTipoServicioAction(idTipoServicio: number): Promise<
     respuesta.error = e
   }
 
-  revalidatePath('/tiposervicio')
+  revalidatePath('/servicios/tipos-servicio')
   return respuesta
+}
+
+export async function autocompletarTiposServicio(query: string, excluirId?: number | string): Promise<SelectDTO2[]> {
+  return listarTiposServicioSelect(query, { excluirId })
 }

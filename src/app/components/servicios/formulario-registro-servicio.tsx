@@ -1,16 +1,19 @@
 'use client'
 
+import { DateInput } from '@mantine/dates'
+import { autocompletarCliente } from "@/actions/cliente.actions"
+import { registrarServicioAction } from "@/actions/servicio.actions"
+import { autocompletarTiposServicio } from "@/actions/tiposervicio.actions"
 import { ESTADO_ACTIVO } from "@/lib/constantes"
-import { SelectDTO } from "@/lib/dto/common.dto"
-import { Button, Flex, LoadingOverlay, NumberInput, Select, Text, TextInput } from "@mantine/core"
+import { ServicioDTO, ServicioSchemaDTO } from "@/lib/dto/servicio.dto"
+import { Button, Flex, Grid, GridCol, LoadingOverlay, NumberInput, StyleProp, Text, TextInput } from "@mantine/core"
 import { useForm, yupResolver } from '@mantine/form'
 import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { SelectActivoInactivo } from "../custom-selects"
-import { ServicioDTO, ServicioSchemaDTO } from "@/lib/dto/servicio.dto"
-import { registrarServicioAction } from "@/actions/servicio.actions"
+import { AsyncAutocomplete } from "../async-autocomplete"
+import { SelectActivoInactivo, SelectEstadoDeuda } from "../custom-selects"
 
 interface Props {
   servicio: ServicioDTO | null
@@ -20,13 +23,27 @@ export function FormularioRegistroServicio({ servicio }: Props) {
   const { back } = useRouter()
   const [isPending, setIsPending] = useState(false)
 
+  const gridSpan: StyleProp<number> = { sm: 6 }
 
   const form = useForm<ServicioDTO>({
     initialValues: {
       id: servicio?.id,
-      nombre: servicio?.nombre || '',
-      tipo: servicio?.tipo || '',
-      precio: servicio?.precio || '',
+      fechaInicio: servicio?.fechaInicio || new Date(),
+      fechaFin: servicio?.fechaFin,
+      // @ts-expect-error numero como string
+      unidad: servicio?.unidad || '',
+      // @ts-expect-error numero como string
+      precioUnidad: servicio?.precioUnidad || '',
+      ultimoPago: servicio?.ultimoPago,
+      ultimaDeuda: servicio?.ultimaDeuda,
+      estadoDeuda: servicio?.estadoDeuda || 'PE',
+      numeroIp: servicio?.numeroIp || '',
+
+      // @ts-expect-error id como string
+      idCliente: servicio?.idCliente?.toString(),
+      // @ts-expect-error id como string
+      idTipoServicio: servicio?.idTipoServicio?.toString(),
+
       estado: servicio?.estado || ESTADO_ACTIVO,
     },
     validate: yupResolver(ServicioSchemaDTO)
@@ -64,36 +81,120 @@ export function FormularioRegistroServicio({ servicio }: Props) {
 
     <form onSubmit={form.onSubmit(onSubmitServicio)}>
 
-      <TextInput
-        withAsterisk
-        label="Nombre"
-        key={form.key('nombre')}
-        {...form.getInputProps('nombre')}
-      />
+      <Grid>
+        <GridCol span={gridSpan}>
+          <AsyncAutocomplete
+            label='Cliente'
+            key={form.key('idCliente')}
+            {...form.getInputProps('idCliente')}
+            serverFunction={autocompletarCliente}
+          />
+        </GridCol>
 
-      <TextInput
-        withAsterisk
-        label="Tipo"
-        key={form.key('tipo')}
-        {...form.getInputProps('tipo')}
-      />
+        <GridCol span={gridSpan}>
+          <AsyncAutocomplete
+            withAsterisk
+            minQueryText={0}
+            label='Tipo de servicio'
+            key={form.key('idTipoServicio')}
+            {...form.getInputProps('idTipoServicio')}
+            serverFunction={autocompletarTiposServicio}
+            onSelect={(value) => {
+              // @ts-expect-error espera un número pero el formulario maneja strings
+              form.setFieldValue('precioUnidad', value.extras + '')
+            }}
+          />
+        </GridCol>
 
-      <NumberInput
-        withAsterisk
-        hideControls
-        label="Precio"
-        prefix="S/."
-        decimalScale={2}
-        key={form.key('precio')}
-        {...form.getInputProps('precio')}
-      />
+        <GridCol span={gridSpan}>
+          <DateInput
+            withAsterisk
+            valueFormat='DD/MM/YYYY'
+            label="Fecha de inicio"
+            key={form.key('fechaInicio')}
+            {...form.getInputProps('fechaInicio')}
+          />
+        </GridCol>
+
+        <GridCol span={gridSpan}>
+          <DateInput
+            valueFormat='DD/MM/YYYY'
+            label="Fecha de fin"
+            key={form.key('fechaFin')}
+            {...form.getInputProps('fechaFin')}
+          />
+        </GridCol>
+
+        <GridCol span={gridSpan}>
+          <NumberInput
+            withAsterisk
+            hideControls
+            label="Unidad"
+            decimalScale={0}
+            key={form.key('unidad')}
+            {...form.getInputProps('unidad')}
+          />
+        </GridCol>
+
+        <GridCol span={gridSpan}>
+          <NumberInput
+            withAsterisk
+            hideControls
+            label="Precio unidad"
+            prefix="S/."
+            decimalScale={2}
+            key={form.key('precioUnidad')}
+            {...form.getInputProps('precioUnidad')}
+          />
+        </GridCol>
+
+        <GridCol span={gridSpan}>
+          <DateInput
+            valueFormat='DD/MM/YYYY'
+            label="Fecha de último pago"
+            key={form.key('ultimoPago')}
+            {...form.getInputProps('ultimoPago')}
+          />
+        </GridCol>
+
+        <GridCol span={gridSpan}>
+          <DateInput
+            valueFormat='DD/MM/YYYY'
+            label="Fecha de última deuda"
+            key={form.key('ultimaDeuda')}
+            {...form.getInputProps('ultimaDeuda')}
+          />
+        </GridCol>
+
+        <GridCol span={gridSpan}>
+          <TextInput
+            label="Número IP"
+            key={form.key('numeroIp')}
+            {...form.getInputProps('numeroIp')}
+          />
+        </GridCol>
+
+        <GridCol span={gridSpan}>
+          <SelectEstadoDeuda
+            withAsterisk
+            label="Estado deuda"
+            key={form.key('estadoDeuda')}
+            {...form.getInputProps('estadoDeuda')}
+          />
+        </GridCol>
+
+        {servicio?.id && <GridCol span={gridSpan}>
+          <SelectActivoInactivo
+            withAsterisk
+            label="Estado"
+            key={form.key('estado')}
+            {...form.getInputProps('estado')}
+          />
+        </GridCol>}
+
+      </Grid>
 
 
-      {servicio?.id && <SelectActivoInactivo
-        withAsterisk
-        label="Estado"
-        {...form.getInputProps('estado')}
-      />}
 
       <br />
       <Flex direction={"row"} gap="md">
@@ -101,7 +202,7 @@ export function FormularioRegistroServicio({ servicio }: Props) {
 
         <Button color="orange" onClick={onCancelar}>Cancelar</Button>
       </Flex>
-    </form>
+    </form >
   </>
 
 }

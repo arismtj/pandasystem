@@ -1,5 +1,5 @@
 'use client'
-import { ESTADO_ACTIVO, ESTADO_INACTIVO } from "@/lib/constantes"
+import { ESTADO_ACTIVO, ESTADO_INACTIVO, MAP_ESTADO_DEUDA, MAP_FRECUENCIA } from "@/lib/constantes"
 import { SelectDTO } from "@/lib/dto/common.dto"
 import { Select, SelectProps } from "@mantine/core"
 
@@ -12,5 +12,23 @@ export function SelectActivoInactivo(props: CustomSelect) {
     { label: 'Activo', value: ESTADO_ACTIVO },
     { label: 'Inactivo', value: ESTADO_INACTIVO },
   ]
+  return <Select data={data} {...props} />
+}
+
+export function SelectFrecuencia(props: CustomSelect) {
+
+  const data: SelectDTO[] = Object.entries(MAP_FRECUENCIA).map(([key, value]) => {
+    return { label: value, value: key }
+  })
+
+  return <Select data={data} {...props} />
+}
+
+export function SelectEstadoDeuda(props: CustomSelect) {
+
+  const data: SelectDTO[] = Object.entries(MAP_ESTADO_DEUDA).map(([key, value]) => {
+    return { label: value, value: key }
+  })
+
   return <Select data={data} {...props} />
 }

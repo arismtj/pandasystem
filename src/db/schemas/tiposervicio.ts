@@ -9,7 +9,6 @@ export const tiposervicioTable = mysqlTable('tiposervicio', {
   nombre: varchar({ length: 50 }).notNull(),
   frecuencia: char({ length: 2 }).notNull(),
   precioUnitario: decimal('precio_unitario', { mode: 'number' }).notNull(),
-  idCliente: int('id_cliente').notNull(),
 
   // Campos de auditoria
   estado: char({ length: 1 }).notNull().default(ESTADO_ACTIVO),
@@ -20,8 +19,6 @@ export const tiposervicioTable = mysqlTable('tiposervicio', {
 
 }, (table) => [
   primaryKey({ name: 'tiposervicio_id_pk', columns: [table.id] }),
-  foreignKey({ name: 'tiposervicio_id_cliente_fk', columns: [table.idCliente], foreignColumns: [clienteTable.id] })
-
 ])
 
 

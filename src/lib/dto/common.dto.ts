@@ -18,3 +18,7 @@ export interface SelectDTO {
   label: string
   disabled?: boolean
 }
+
+export interface SelectDTO2 extends SelectDTO {
+  extras: any
+}

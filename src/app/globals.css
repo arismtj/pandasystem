@@ -1,4 +1,5 @@
 @import "tailwind-preset-mantine";
+@import "@mantine/dates/styles.css";
 
 .sticky-l-col {
   position: sticky;

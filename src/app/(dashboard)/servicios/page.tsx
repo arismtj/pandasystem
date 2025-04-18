@@ -4,7 +4,6 @@ import { Paginacion } from "@/app/components/paginacion"
 import FiltrosServicio from "@/app/components/servicios/filtros-servicio"
 import TablaServicios, { TABLA_SERVICIOS_COLS } from "@/app/components/servicios/tabla-servicios"
 import { TableSkeleton } from "@/app/components/table-skeleton"
-import { FiltroClienteDTO } from "@/lib/dto/cliente.dto"
 import { FiltroServicioDTO } from "@/lib/dto/servicio.dto"
 import { simpleHash } from "@/lib/utils"
 import { auth } from "@/server/auth/auth"
@@ -21,18 +20,17 @@ interface Props {
 
 export default async function ServiciosPage(props: Props) {
   const session = await auth()
-  
-    // Validamos que el usuario tenga acceso a este módulo sino mostramos error
-    const tienePermiso = await usuarioTienePermiso(+session?.user.id!, '/servicios')
-    if (!tienePermiso) {
-      return <Page403 />
-    }
+
+  // Validamos que el usuario tenga acceso a este módulo sino mostramos error
+  const tienePermiso = await usuarioTienePermiso(+session?.user.id!, '/servicios')
+  if (!tienePermiso) {
+    return <Page403 />
+  }
 
   const searchParams = await props.searchParams
 
   const filtros: FiltroServicioDTO = {
     nombre: searchParams?.nombre,
-    tipo: searchParams?.tipo,   
     page: searchParams?.page || 1,
     rowsPerPage: searchParams?.rowsPerPage
   }
@@ -46,9 +44,13 @@ export default async function ServiciosPage(props: Props) {
       <Link href="/servicios/registro/nuevo">
         <Button>Nuevo</Button>
       </Link>
+
+      <Link href="/servicios/tipos-servicio" style={{ marginLeft: 'auto' }}>
+        <Button color="violet">Tipos de servicio</Button>
+      </Link>
     </FiltrosServicio>
     <br />
-    <Flex>
+    <Flex justify='center'>
       <Suspense key={key} fallback={<TableSkeleton columns={TABLA_SERVICIOS_COLS} />}>
         <TablaServicios {...filtros} />
       </Suspense>

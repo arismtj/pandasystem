@@ -1,10 +1,11 @@
 import { DB } from "@/db/drizzle"
 import { clienteTable } from "@/db/schemas/cliente"
 import { zonaTable } from "@/db/schemas/zona"
-import { ESTADO_INACTIVO } from "@/lib/constantes"
+import { ESTADO_ACTIVO, ESTADO_INACTIVO } from "@/lib/constantes"
 import { ClienteDTO, FiltroClienteDTO } from "@/lib/dto/cliente.dto"
+import { SelectDTO } from "@/lib/dto/common.dto"
 import { eliminarArchivo, guardarArchivo } from "@/lib/files.utils"
-import { and, count, eq, like, SQL } from "drizzle-orm"
+import { and, count, eq, like, ne, sql, SQL } from "drizzle-orm"
 import { User } from "next-auth"
 
 export async function obtenerClientePorId(idCliente: number): Promise<ClienteDTO | null> {
@@ -32,6 +33,42 @@ export async function obtenerClientePorId(idCliente: number): Promise<ClienteDTO
     }
   }
   return null
+}
+
+interface ClienteSelectOpts {
+  excluirId?: number | string
+  soloActivos?: boolean
+}
+export async function listarClientesSelect(filtro: string, { excluirId, soloActivos = false }: ClienteSelectOpts): Promise<SelectDTO[]> {
+  const where: SQL[] = [
+    like(sql`concat(${clienteTable.nombres}, ' ', ${clienteTable.apellidos})`, `%${filtro}%`)
+  ]
+
+  if (excluirId) {
+    where.push(ne(clienteTable.id, +excluirId))
+  }
+  if (soloActivos === true) {
+    where.push(eq(clienteTable.estado, ESTADO_ACTIVO))
+  }
+
+  const clientesList = await DB.select({
+    id: clienteTable.id,
+    nombres: clienteTable.nombres,
+    apellidos: clienteTable.apellidos,
+    estado: clienteTable.estado,
+  }).from(clienteTable).where(and(...where))
+
+  if (clientesList.length === 0) {
+    return []
+  }
+
+  return clientesList.map(item => {
+    return {
+      value: item.id + '',
+      label: item.nombres + ' ' + item.apellidos,
+      disabled: item.estado !== ESTADO_ACTIVO
+    } as SelectDTO
+  })
 }
 
 function generarWhereFiltroClientes(filtros: FiltroClienteDTO): SQL[] {

@@ -37,7 +37,7 @@ export default async function TablaPermisos(props: Props) {
         {data.map((item, index) => {
           return <TableTr key={`${index}-${item.id || ''}`}>
             <TableTd miw={80} width={80}>
-              <Tooltip label="Editar zona">
+              <Tooltip label="Editar permiso">
                 <Link href={"/usuarios/permisos/registro/" + item.id}>
                   <ActionIcon size="sm">
                     <IconEdit />

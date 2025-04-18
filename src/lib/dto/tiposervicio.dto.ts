@@ -8,7 +8,6 @@ export const TipoServicioSchemaDTO = object({
   estado: string().length(1).default(ESTADO_ACTIVO),
   frecuencia: string().max(150).required(CAMPO_REQUERIDO),
   precioUnitario: number().required(CAMPO_REQUERIDO),
-  idCliente: number().required(CAMPO_REQUERIDO),
 })
 
 export type TipoServicioDTO = InferType<typeof TipoServicioSchemaDTO> & {

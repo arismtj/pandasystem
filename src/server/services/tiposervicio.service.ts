@@ -1,19 +1,48 @@
 import { DB } from "@/db/drizzle"
 import { servicioTable } from "@/db/schemas/servicios"
 import { tiposervicioTable } from "@/db/schemas/tiposervicio"
-import { ESTADO_INACTIVO } from "@/lib/constantes"
+import { ESTADO_ACTIVO, ESTADO_INACTIVO } from "@/lib/constantes"
+import { SelectDTO2 } from "@/lib/dto/common.dto"
 import { FiltroTipoServicioDTO, TipoServicioDTO } from "@/lib/dto/tiposervicio.dto"
-import { and, count, eq, SQL } from "drizzle-orm"
+import { and, count, eq, like, ne, SQL } from "drizzle-orm"
 import { User } from "next-auth"
 
 
-export async function listarModulosTipoServicio(idTipoServicio: number) {
+interface ClienteSelectOpts {
+  excluirId?: number | string
+  soloActivos?: boolean
+}
+export async function listarTiposServicioSelect(filtro: string, { excluirId, soloActivos = false }: ClienteSelectOpts): Promise<SelectDTO2[]> {
+  const where: SQL[] = [
+    like(tiposervicioTable.nombre, `%${filtro}%`)
+  ]
 
-  const cliente = await DB.select().from(tiposervicioTable).where(eq(tiposervicioTable.id, idTipoServicio))
+  if (excluirId) {
+    where.push(ne(tiposervicioTable.id, +excluirId))
+  }
+  if (soloActivos === true) {
+    where.push(eq(tiposervicioTable.estado, ESTADO_ACTIVO))
+  }
+  3
+  const tiposServicioList = await DB.select({
+    id: tiposervicioTable.id,
+    nombre: tiposervicioTable.nombre,
+    estado: tiposervicioTable.estado,
+    precioUnitario: tiposervicioTable.precioUnitario
+  }).from(tiposervicioTable).where(and(...where)).limit(40)
 
-  if (!cliente || cliente.length === 0) {
+  if (tiposServicioList.length === 0) {
     return []
   }
+
+  return tiposServicioList.map(item => {
+    return {
+      value: item.id + '',
+      label: item.nombre,
+      disabled: item.estado !== ESTADO_ACTIVO,
+      extras: item.precioUnitario
+    } as SelectDTO2
+  })
 }
 
 export async function obtenerTipoServicioPorId(idTipoServicio: number): Promise<TipoServicioDTO | null> {
@@ -26,10 +55,9 @@ export async function obtenerTipoServicioPorId(idTipoServicio: number): Promise<
     return {
       id: tiposervicio.id,
       nombre: tiposervicio.nombre,
-      estado: tiposervicio.estado,
       frecuencia: tiposervicio.frecuencia,
       precioUnitario: tiposervicio.precioUnitario,
-      idCliente: tiposervicio.idCliente,
+      estado: tiposervicio.estado,
     }
   }
   return null
@@ -61,11 +89,9 @@ export async function listarTipoServiciosPorFiltro(filtros: FiltroTipoServicioDT
   const data = await DB.select({
     id: tiposervicioTable.id,
     nombre: tiposervicioTable.nombre,
-    estado: tiposervicioTable.estado,
     frecuencia: tiposervicioTable.frecuencia,
     precioUnitario: tiposervicioTable.precioUnitario,
-    idCliente: tiposervicioTable.idCliente,
-
+    estado: tiposervicioTable.estado,
   }).from(tiposervicioTable)
   return data
 }

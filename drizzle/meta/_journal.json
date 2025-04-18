@@ -19,8 +19,22 @@
     {
       "idx": 2,
       "version": "5",
-      "when": 1744774344396,
+      "when": 1744912377595,
       "tag": "0002_correccion_campos",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1744937757661,
+      "tag": "0003_correccion_servicio",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1744938471859,
+      "tag": "0004_quick_magneto",
       "breakpoints": true
     }
   ]

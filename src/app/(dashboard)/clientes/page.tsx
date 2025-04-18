@@ -51,7 +51,7 @@ export default async function ClientesPage(props: Props) {
       </Link>
     </FiltrosCliente>
     <br />
-    <Flex>
+    <Flex justify={"center"}>
       <Suspense key={key} fallback={<TableSkeleton columns={TABLA_CLIENTES_COLS} />}>
         <TablaClientes {...filtros} />
       </Suspense>

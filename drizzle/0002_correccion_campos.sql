@@ -6,6 +6,8 @@ ALTER TABLE `usuario` RENAME COLUMN `username` TO `login`;--> statement-breakpoi
 ALTER TABLE `usuario` DROP INDEX `usuario_username_unique`;--> statement-breakpoint
 ALTER TABLE `servicio` DROP FOREIGN KEY `servicio_id_tiposervicio_fk`;
 --> statement-breakpoint
+ALTER TABLE `tiposervicio` DROP FOREIGN KEY `tiposervicio_id_cliente_fk`;
+--> statement-breakpoint
 ALTER TABLE `cliente` MODIFY COLUMN `referencia` varchar(250);--> statement-breakpoint
 ALTER TABLE `deuda` MODIFY COLUMN `fecha_limite` date NOT NULL;--> statement-breakpoint
 ALTER TABLE `deuda` MODIFY COLUMN `fecha_notificacion` date NOT NULL;--> statement-breakpoint
@@ -18,4 +20,5 @@ ALTER TABLE `tiposervicio` MODIFY COLUMN `precio_unitario` decimal NOT NULL;--> 
 ALTER TABLE `servicio` ADD `numero_ip` varchar(100);--> statement-breakpoint
 ALTER TABLE `usuario` ADD CONSTRAINT `usuario_login_unique` UNIQUE(`login`);--> statement-breakpoint
 ALTER TABLE `servicio` ADD CONSTRAINT `servicio_id_tiposervicio_fk` FOREIGN KEY (`id_tipo_servicio`) REFERENCES `tiposervicio`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `cliente` DROP COLUMN `ip`;
+ALTER TABLE `cliente` DROP COLUMN `ip`;--> statement-breakpoint
+ALTER TABLE `tiposervicio` DROP COLUMN `id_cliente`;

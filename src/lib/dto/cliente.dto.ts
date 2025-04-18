@@ -2,7 +2,8 @@ import { InferType, number, object, string } from "yup"
 import {
   CAMPO_REQUERIDO,
   COORDENADAS_REGEX,
-  ESTADO_ACTIVO
+  ESTADO_ACTIVO,
+  NUMERO_DNI_REGEX
 } from "../constantes"
 import { PaginacionDTO } from "./common.dto"
 
@@ -10,7 +11,7 @@ export const ClienteSchemaDTO = object({
   id: number(),
   nombres: string().max(100).required(CAMPO_REQUERIDO),
   apellidos: string().max(100).required(CAMPO_REQUERIDO),
-  dni: string().max(8).required(CAMPO_REQUERIDO),
+  dni: string().max(8).matches(NUMERO_DNI_REGEX, 'Debe ingresar un número de DNI válido').required(CAMPO_REQUERIDO),
   celular: string().max(50).nullable(),
   idZona: number().required(CAMPO_REQUERIDO),
   direccion: string().max(250).required(CAMPO_REQUERIDO),

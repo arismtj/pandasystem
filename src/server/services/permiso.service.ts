@@ -9,7 +9,7 @@ import { User } from "next-auth"
 import { registrarModulosPermisos } from "./modulo.service"
 
 
-export async function listarPermisosSelect(soloActivos = true): Promise<SelectDTO[]> {
+export async function listarPermisosSelect(soloActivos = false): Promise<SelectDTO[]> {
   const permisosList = await DB.select({
     id: permisoTable.id,
     nombre: permisoTable.nombre,

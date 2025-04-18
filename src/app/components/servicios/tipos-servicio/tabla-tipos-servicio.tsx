@@ -1,27 +1,27 @@
-import { anularServicioAction } from "@/actions/servicio.actions"
+import { anularTipoServicioAction } from "@/actions/tiposervicio.actions"
 import { ESTADO_ACTIVO, MAP_FRECUENCIA } from "@/lib/constantes"
-import { FiltroServicioDTO, ServicioDTO } from "@/lib/dto/servicio.dto"
-import { listarServiciosPorFiltro } from "@/server/services/servicio.service"
+import { FiltroTipoServicioDTO, TipoServicioDTO } from "@/lib/dto/tiposervicio.dto"
+import { listarTipoServiciosPorFiltro } from "@/server/services/tiposervicio.service"
 import { ActionIcon, Table, TableScrollContainer, TableTbody, TableTd, TableTh, TableThead, TableTr, Tooltip } from "@mantine/core"
 import { IconEdit } from "@tabler/icons-react"
 import Link from "next/link"
-import { BotonAnular } from "../boton-anular"
+import { BotonAnular } from "../../boton-anular"
 
-interface Props extends FiltroServicioDTO {
+interface Props extends FiltroTipoServicioDTO {
 
 }
 
-export const TABLA_SERVICIOS_COLS = ['', 'Cod', 'Cliente', 'Dirección', 'Tipo de servicio', 'Frecuencia', 'Monto', 'Fecha inicio', 'Ultimo pago', 'Estado']
+export const TABLA_PERMISOS_COLS = ['', 'Cod.', 'Nombre', 'Frecuencia', 'Precio Unitario', 'Estado']
 
-export default async function TablaClientes(props: Props) {
+export default async function TablaTiposServicio(props: Props) {
 
-  const data: ServicioDTO[] = await listarServiciosPorFiltro({
+  const data: TipoServicioDTO[] = await listarTipoServiciosPorFiltro({
     nombre: props.nombre,
     page: props.page || 1,
     rowsPerPage: props.rowsPerPage
   })
 
-  const columnas = TABLA_SERVICIOS_COLS.map(item => {
+  const columnas = TABLA_PERMISOS_COLS.map(item => {
     return <TableTh key={'th' + item}>{item}</TableTh>
   })
 
@@ -37,37 +37,33 @@ export default async function TablaClientes(props: Props) {
         {data.map((item, index) => {
           return <TableTr key={`${index}-${item.id || ''}`}>
             <TableTd miw={80} width={80}>
-              <Tooltip label="Editar usuario">
-                <Link href={"/servicios/registro/" + item.id}>
+              <Tooltip label="Editar tipo de servicio">
+                <Link href={"/servicios/tipos-servicio/registro/" + item.id}>
                   <ActionIcon size="sm">
                     <IconEdit />
                   </ActionIcon>
                 </Link>
               </Tooltip>
-
               {item.estado === ESTADO_ACTIVO && <>
                 &nbsp;&nbsp;
-                <Tooltip label="Anular servicio">
+                <Tooltip label="Anular tipo de servicio">
                   <BotonAnular
-                    title="¿Desea anular el servicio?"
+                    title="¿Desea anular el tipo de servicio?"
                     serverAction={async () => {
                       'use server'
-                      return await anularServicioAction(item.id!)
+                      return await anularTipoServicioAction(item.id!)
                     }}
                   />
                 </Tooltip>
               </>}
             </TableTd>
             <TableTd>{item.id}</TableTd>
-            <TableTd>{item.nombreCliente}</TableTd>
-            <TableTd>{item.direccionCliente}</TableTd>
-            <TableTd>{item.nombreTipoServicio}</TableTd>
-            
+            <TableTd miw={150}>{item.nombre}</TableTd>
+
             {/* @ts-expect-error */}
-            <TableTd miw={150}>{MAP_FRECUENCIA[item.frecuenciaServicio]}</TableTd>
-            <TableTd>{item.precioUnidad}</TableTd>
-            <TableTd>{item.fechaInicio.toLocaleDateString()}</TableTd>
-            <TableTd>{item.ultimoPago?.toLocaleDateString()}</TableTd>
+            <TableTd miw={150}>{MAP_FRECUENCIA[item.frecuencia]}</TableTd>
+
+            <TableTd miw={150}>{item.precioUnitario}</TableTd>
             <TableTd>{item.estado === ESTADO_ACTIVO ? 'Activo' : 'Inactivo'}</TableTd>
           </TableTr>
         })}

@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "03ccf849-960a-4105-b796-d19febdfc66d",
-  "prevId": "e6e3e5b0-b146-4aa2-bd26-fe5d084403f0",
+  "id": "32c859c3-ac4d-4009-a8a8-20b92d652f85",
+  "prevId": "fcdab4c7-5c05-40e2-ad75-47d83d1127c6",
   "tables": {
     "cliente": {
       "name": "cliente",
@@ -694,61 +694,55 @@
           "notNull": true,
           "autoincrement": true
         },
-        "nombre": {
-          "name": "nombre",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "fecha_inicio": {
           "name": "fecha_inicio",
-          "type": "varchar(100)",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "fecha_fin": {
           "name": "fecha_fin",
-          "type": "varchar(100)",
+          "type": "date",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "unidad": {
           "name": "unidad",
-          "type": "varchar(10)",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "precio_unidad": {
           "name": "precio_unidad",
-          "type": "varchar(100)",
+          "type": "decimal",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "ultimo_pago": {
           "name": "ultimo_pago",
-          "type": "varchar(100)",
+          "type": "date",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "ultima_deuda": {
           "name": "ultima_deuda",
-          "type": "varchar(100)",
+          "type": "date",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "estado_deuda": {
           "name": "estado_deuda",
-          "type": "varchar(100)",
+          "type": "char(2)",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'PE'"
         },
         "numero_ip": {
           "name": "numero_ip",
@@ -1187,13 +1181,7 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {
-      "\"cliente\".\"numero_dni\"": "\"cliente\".\"dni\"",
-      "\"cliente\".\"numero_telefono\"": "\"cliente\".\"celular\"",
-      "\"servicio\".\"ultimo_deuda\"": "\"servicio\".\"ultima_deuda\"",
-      "\"servicio\".\"id_tiposervicio\"": "\"servicio\".\"id_tipo_servicio\"",
-      "\"usuario\".\"username\"": "\"usuario\".\"login\""
-    }
+    "columns": {}
   },
   "internal": {
     "tables": {},

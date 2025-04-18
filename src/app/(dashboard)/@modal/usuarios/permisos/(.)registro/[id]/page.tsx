@@ -28,7 +28,7 @@ export default async function RegistroPermisoPage(props: Props) {
   const listaModulos: SelectDTO[] = await listarModulosSelect()
 
   return (
-    <OpenedModal title="Registro de zonas">
+    <OpenedModal title="Registro de permisos">
       <FormularioRegistroPermiso
         permiso={permisoDTO}
         modulos={listaModulos}

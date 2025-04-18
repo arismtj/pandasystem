@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, TextInput } from "@mantine/core"
+import { Button, Grid, GridCol, TextInput } from "@mantine/core"
 import { IconClearAll, IconSearch } from "@tabler/icons-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { FormEvent } from "react"
@@ -41,21 +41,14 @@ export default function FiltrosServicio({ children }: Props) {
   }
 
   return <form onSubmit={filtrarBusqueda}>
-    <div className="flex flex-row gap-2 flex-wrap">
-    
-      <TextInput
-        className="w-full md:w-[30%]"
-        defaultValue={searchParams.get('nombre')?.toString()}
-        label="Nombre" name="nombres"
-      />
-      <TextInput
-        className="w-full md:w-[30%]"
-        defaultValue={searchParams.get('tipo')?.toString()}
-        label="Tipo" name="apellidos"
-      />
-     
-
-    </div>
+     <Grid>
+      <GridCol span={{ md: 4 }}>
+        <TextInput
+          defaultValue={searchParams.get('nombre')?.toString()}
+          label="Nombre" name="nombres"
+        />
+      </GridCol>
+    </Grid>
     <br />
     <div className="flex flex-row gap-2">
       <Button leftSection={<IconSearch />} type="submit">

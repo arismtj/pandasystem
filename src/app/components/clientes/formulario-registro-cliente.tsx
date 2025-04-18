@@ -63,7 +63,7 @@ export function FormularioRegistroCliente({ cliente, zonas }: Props) {
     }
 
     if (cliente?.fachada) {
-      const imageUrl = `/api/descargarArchivo/${cliente.fachada}`
+      const imageUrl = `/api/descargar-archivo/${cliente.fachada}`
       return <Image
         key={cliente.id + 'fachada'}
         src={imageUrl}
@@ -141,6 +141,7 @@ export function FormularioRegistroCliente({ cliente, zonas }: Props) {
           <TextInput
             withAsterisk
             label="Nro DNI"
+            maxLength={8}
             key={form.key('dni')}
             {...form.getInputProps('dni')}
           />
