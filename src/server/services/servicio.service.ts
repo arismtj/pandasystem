@@ -17,26 +17,34 @@ export async function listarModulosServicio(idServicio: number) {
 }
 
 export async function obtenerServicioPorId(idServicio: number): Promise<ServicioDTO | null> {
-  const serviciosList = await DB.select().from(servicioTable).where(
+  const serviciosList = await DB.select({
+    data: servicioTable,
+    nombreCliente: sql<string>`concat(${clienteTable.nombres}, ' ', ${clienteTable.apellidos})`,
+    nombreTipoServicio: tiposervicioTable.nombre,
+  }).from(servicioTable).where(
     eq(servicioTable.id, idServicio)
-  ).limit(1)
+  ).innerJoin(clienteTable, eq(clienteTable.id, servicioTable.idCliente))
+    .innerJoin(tiposervicioTable, eq(tiposervicioTable.id, servicioTable.idTipoServicio))
+    .limit(1)
 
   if (serviciosList && serviciosList.length > 0) {
     const servicio = serviciosList[0]
     return {
-      id: servicio.id,
-      fechaInicio: servicio.fechaInicio,
-      fechaFin: servicio.fechaFin,
-      estado: servicio.estado,
-      unidad: servicio.unidad,
-      precioUnidad: servicio.precioUnidad,
-      ultimoPago: servicio.ultimoPago,
-      ultimaDeuda: servicio.ultimaDeuda,
-      estadoDeuda: servicio.estadoDeuda,
-      numeroIp: servicio.numeroIp,
+      id: servicio.data.id,
+      fechaInicio: servicio.data.fechaInicio,
+      fechaFin: servicio.data.fechaFin,
+      estado: servicio.data.estado,
+      unidad: servicio.data.unidad,
+      precioUnidad: servicio.data.precioUnidad,
+      ultimoPago: servicio.data.ultimoPago,
+      ultimaDeuda: servicio.data.ultimaDeuda,
+      estadoDeuda: servicio.data.estadoDeuda,
+      numeroIp: servicio.data.numeroIp,
 
-      idCliente: servicio.idCliente,
-      idTipoServicio: servicio.idTipoServicio,
+      idCliente: servicio.data.idCliente,
+      idTipoServicio: servicio.data.idTipoServicio,
+      nombreCliente: servicio.nombreCliente,
+      nombreTipoServicio: servicio.nombreTipoServicio,
     }
   }
   return null

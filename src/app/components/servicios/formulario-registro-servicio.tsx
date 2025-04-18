@@ -85,6 +85,7 @@ export function FormularioRegistroServicio({ servicio }: Props) {
         <GridCol span={gridSpan}>
           <AsyncAutocomplete
             label='Cliente'
+            defaultSelect={servicio?.nombreCliente ? { value: servicio.idCliente.toString(), label: servicio.nombreCliente } : undefined}
             key={form.key('idCliente')}
             {...form.getInputProps('idCliente')}
             serverFunction={autocompletarCliente}
@@ -96,6 +97,7 @@ export function FormularioRegistroServicio({ servicio }: Props) {
             withAsterisk
             minQueryText={0}
             label='Tipo de servicio'
+            defaultSelect={servicio?.nombreTipoServicio ? { value: servicio.idTipoServicio.toString(), label: servicio.nombreTipoServicio } : undefined}
             key={form.key('idTipoServicio')}
             {...form.getInputProps('idTipoServicio')}
             serverFunction={autocompletarTiposServicio}

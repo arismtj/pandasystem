@@ -10,24 +10,31 @@ type OmitedProps = 'value' | 'onClick' | 'onFocus' | 'onBlur' | 'rightSection'
 
 interface AsyncAutocomplete extends Omit<TextInputProps, OmitedProps> {
   serverFunction: Function
+  defaultSelect?: SelectDTO
   minQueryText?: number
   onSelect?: (value: any) => void
 }
 
-export function AsyncAutocomplete({ serverFunction, onSelect, minQueryText = 3, ...props }: AsyncAutocomplete) {
+export function AsyncAutocomplete({
+  serverFunction,
+  onSelect,
+  minQueryText = 3,
+  defaultSelect,
+  ...props
+}: AsyncAutocomplete) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   })
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<SelectDTO[] | null>(null)
-  const [value, setValue] = useState('')
+  const [data, setData] = useState<SelectDTO[] | null>(defaultSelect ? [defaultSelect] : null)
+  const [value, setValue] = useState(defaultSelect?.label || '')
 
   const fetchOptions = useDebouncedCallback(async (query: string) => {
     setLoading(true)
     try {
       // Llamamos a la server action; en un entorno real, aquí se consultaría la BD
-      const suggestions = await serverFunction(query)
-      setData(suggestions)
+      const suggestions = await serverFunction(query, defaultSelect?.value)
+      setData(defaultSelect ? [defaultSelect, ...suggestions] : suggestions)
     } catch (error) {
       console.error('Error al obtener sugerencias:', error)
     } finally {
@@ -72,8 +79,8 @@ export function AsyncAutocomplete({ serverFunction, onSelect, minQueryText = 3, 
           onClick={() => combobox.openDropdown()}
           onFocus={() => {
             combobox.openDropdown()
-            console.log('asdasd');
-            
+            console.log('asdasd')
+
             if (data === null) {
               fetchOptions(value)
             }
