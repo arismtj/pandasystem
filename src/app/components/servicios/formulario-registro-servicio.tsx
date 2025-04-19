@@ -1,12 +1,12 @@
 'use client'
 
-import { DateInput } from '@mantine/dates'
-import { autocompletarCliente } from "@/actions/cliente.actions"
+import { autocompletarClienteExcl } from "@/actions/cliente.actions"
 import { registrarServicioAction } from "@/actions/servicio.actions"
 import { autocompletarTiposServicio } from "@/actions/tiposervicio.actions"
 import { ESTADO_ACTIVO } from "@/lib/constantes"
 import { ServicioDTO, ServicioSchemaDTO } from "@/lib/dto/servicio.dto"
 import { Button, Flex, Grid, GridCol, LoadingOverlay, NumberInput, StyleProp, Text, TextInput } from "@mantine/core"
+import { DateInput } from '@mantine/dates'
 import { useForm, yupResolver } from '@mantine/form'
 import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
@@ -85,10 +85,11 @@ export function FormularioRegistroServicio({ servicio }: Props) {
         <GridCol span={gridSpan}>
           <AsyncAutocomplete
             label='Cliente'
-            defaultSelect={servicio?.nombreCliente ? { value: servicio.idCliente.toString(), label: servicio.nombreCliente } : undefined}
+            defaultValue={servicio?.nombreCliente ? servicio.idCliente.toString() : undefined}
+            defaultItemLabel={servicio?.nombreCliente ? servicio.nombreCliente : undefined}
             key={form.key('idCliente')}
             {...form.getInputProps('idCliente')}
-            serverFunction={autocompletarCliente}
+            serverFunction={autocompletarClienteExcl}
           />
         </GridCol>
 
@@ -97,7 +98,8 @@ export function FormularioRegistroServicio({ servicio }: Props) {
             withAsterisk
             minQueryText={0}
             label='Tipo de servicio'
-            defaultSelect={servicio?.nombreTipoServicio ? { value: servicio.idTipoServicio.toString(), label: servicio.nombreTipoServicio } : undefined}
+            defaultValue={servicio?.nombreTipoServicio ? servicio.idTipoServicio.toString() : undefined}
+            defaultItemLabel={servicio?.nombreTipoServicio ? servicio.nombreTipoServicio : undefined}
             key={form.key('idTipoServicio')}
             {...form.getInputProps('idTipoServicio')}
             serverFunction={autocompletarTiposServicio}
@@ -179,6 +181,7 @@ export function FormularioRegistroServicio({ servicio }: Props) {
         <GridCol span={gridSpan}>
           <SelectEstadoDeuda
             withAsterisk
+            readOnly={!!servicio?.id}
             label="Estado deuda"
             key={form.key('estadoDeuda')}
             {...form.getInputProps('estadoDeuda')}

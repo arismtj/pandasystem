@@ -1,19 +1,36 @@
 import { anularServicioAction } from "@/actions/servicio.actions"
-import { ESTADO_ACTIVO, MAP_FRECUENCIA } from "@/lib/constantes"
+import { ESTADO_ACTIVO, SELECT_FRECUENCIA } from "@/lib/constantes"
 import { FiltroServicioDTO, ServicioDTO } from "@/lib/dto/servicio.dto"
 import { listarServiciosPorFiltro } from "@/server/services/servicio.service"
 import { ActionIcon, Table, TableScrollContainer, TableTbody, TableTd, TableTh, TableThead, TableTr, Tooltip } from "@mantine/core"
 import { IconEdit } from "@tabler/icons-react"
 import Link from "next/link"
 import { BotonAnular } from "../boton-anular"
+import { selectDtoArrayToMap } from "@/lib/utils"
+import { HeaderTabla } from "@/lib/types.ui"
 
 interface Props extends FiltroServicioDTO {
 
 }
 
-export const TABLA_SERVICIOS_COLS = ['', 'Cod', 'Cliente', 'Dirección', 'Tipo de servicio', 'Frecuencia', 'Monto', 'Fecha inicio', 'Ultimo pago', 'Estado']
+const COLUMNAS_TABLA: HeaderTabla[] = [
+  { label: '' },
+  { label: 'Cod' },
+  { label: 'Cliente' },
+  { label: 'Dirección' },
+  { label: 'Tipo de servicio' },
+  { label: 'Frecuencia' },
+  { label: 'Monto', className: 'text-center' },
+  { label: 'Fecha inicio' },
+  { label: 'Ultimo pago' },
+  { label: 'Estado' }
+]
+
+export const TABLA_SERVICIOS_COLS = COLUMNAS_TABLA.map(item => item.label)
 
 export default async function TablaClientes(props: Props) {
+
+  const mapFrecuencias = selectDtoArrayToMap(SELECT_FRECUENCIA)
 
   const data: ServicioDTO[] = await listarServiciosPorFiltro({
     nombre: props.nombre,
@@ -21,8 +38,10 @@ export default async function TablaClientes(props: Props) {
     rowsPerPage: props.rowsPerPage
   })
 
-  const columnas = TABLA_SERVICIOS_COLS.map(item => {
-    return <TableTh key={'th' + item}>{item}</TableTh>
+  const columnas = COLUMNAS_TABLA.map(item => {
+    return <TableTh key={'th' + item.label} className={item.className}>
+      {item.label}
+    </TableTh>
   })
 
   return <TableScrollContainer minWidth={900}>
@@ -59,15 +78,15 @@ export default async function TablaClientes(props: Props) {
               </>}
             </TableTd>
             <TableTd>{item.id}</TableTd>
-            <TableTd>{item.nombreCliente}</TableTd>
-            <TableTd>{item.direccionCliente}</TableTd>
-            <TableTd>{item.nombreTipoServicio}</TableTd>
-            
+            <TableTd miw={200}>{item.nombreCliente}</TableTd>
+            <TableTd miw={250}>{item.direccionCliente}</TableTd>
+            <TableTd miw={180}>{item.nombreTipoServicio}</TableTd>
+
             {/* @ts-expect-error */}
-            <TableTd miw={150}>{MAP_FRECUENCIA[item.frecuenciaServicio]}</TableTd>
-            <TableTd>{item.precioUnidad}</TableTd>
-            <TableTd>{item.fechaInicio.toLocaleDateString()}</TableTd>
-            <TableTd>{item.ultimoPago?.toLocaleDateString()}</TableTd>
+            <TableTd miw={150}>{mapFrecuencias.get(item.frecuenciaServicio)}</TableTd>
+            <TableTd miw={100} className="text-center">{item.precioUnidad}</TableTd>
+            <TableTd miw={120}>{item.fechaInicio.toLocaleDateString()}</TableTd>
+            <TableTd miw={120}>{item.ultimoPago?.toLocaleDateString()}</TableTd>
             <TableTd>{item.estado === ESTADO_ACTIVO ? 'Activo' : 'Inactivo'}</TableTd>
           </TableTr>
         })}

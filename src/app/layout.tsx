@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import '@mantine/notifications/styles.css'
 import { ModalsProvider } from "@mantine/modals"
+import MantineDateProvider from "./components/layout/mantine-date-provider"
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,10 +24,12 @@ export default function RootLayout({ children }: Readonly<Props>) {
       </head>
       <body className="antialiased">
         <MantineProvider >
-          <Notifications />
-          <ModalsProvider>
-            {children}
-          </ModalsProvider>
+          <MantineDateProvider>
+            <Notifications />
+            <ModalsProvider>
+              {children}
+            </ModalsProvider>
+          </MantineDateProvider>
         </MantineProvider>
       </body>
     </html>

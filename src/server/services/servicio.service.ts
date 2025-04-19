@@ -2,10 +2,13 @@ import { DB } from "@/db/drizzle"
 import { clienteTable } from "@/db/schemas/cliente"
 import { servicioTable } from "@/db/schemas/servicios"
 import { tiposervicioTable } from "@/db/schemas/tiposervicio"
-import { ESTADO_INACTIVO } from "@/lib/constantes"
+import { ESTADO_ACTIVO, ESTADO_INACTIVO, FRECUENCIA_SERV_UNICO, SELECT_FRECUENCIA } from "@/lib/constantes"
 import { FiltroServicioDTO, ServicioDTO } from "@/lib/dto/servicio.dto"
 import { and, count, eq, sql, SQL } from "drizzle-orm"
 import { User } from "next-auth"
+import { obtenerTipoServicioPorId } from "./tiposervicio.service"
+import { selectDtoArrayToMap } from "@/lib/utils"
+import { registrarDeuda } from "./deuda.service"
 
 export async function listarModulosServicio(idServicio: number) {
 
@@ -116,7 +119,22 @@ export async function registrarServicio(servicioDTO: ServicioDTO, authUser: User
     usuarioCreacion: +authUser.id!
   })
 
-  return { id: +entidad[0].insertId, ...datosServicio }
+  const response = { id: +entidad[0].insertId, ...datosServicio }
+
+  const tipoServicio = await obtenerTipoServicioPorId(servicioDTO.idTipoServicio)
+
+  if (tipoServicio?.frecuencia === FRECUENCIA_SERV_UNICO) {
+    await registrarDeuda({
+      idServicio: response.id,
+      fechaLimite: new Date(),
+      fechaNotificacion: new Date(),
+      monto: servicioDTO.precioUnidad * servicioDTO.unidad,
+      ultimoPago: '-',
+      estado: ESTADO_ACTIVO,
+    }, authUser)
+  }
+
+  return response
 }
 
 export async function anularServicio(idServicio: number, authUser: User): Promise<void> { // el Promise<void> nos dice que no debemos devolver nada

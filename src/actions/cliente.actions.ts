@@ -1,7 +1,7 @@
 'use server'
 
 import { ClienteDTO, ClienteSchemaDTO } from "@/lib/dto/cliente.dto"
-import { RespuestaDTO, SelectDTO } from "@/lib/dto/common.dto"
+import { RespuestaDTO, SelectDTO, SelectOptions } from "@/lib/dto/common.dto"
 
 import { auth } from "@/server/auth/auth"
 import { anularCliente, listarClientesSelect, registrarCliente } from "@/server/services/cliente.service"
@@ -47,9 +47,17 @@ export async function anularClienteAction(idCliente: number): Promise<RespuestaD
   return respuesta
 }
 
-export async function autocompletarCliente(query: string, excluirId?: number | string): Promise<SelectDTO[]> {
-  if (query.length < 3) {
+export async function autocompletarCliente(query: string, options: SelectOptions): Promise<SelectDTO[]> {
+  if (query.length < 3 && !options.incluirId) {
     return []
   }
-  return listarClientesSelect(query, { excluirId })
+  return listarClientesSelect(query, options)
+}
+
+export async function autocompletarClienteIncl(query: string, incluirId?: number | string): Promise<SelectDTO[]> {
+  return autocompletarCliente(query, { incluirId })
+}
+
+export async function autocompletarClienteExcl(query: string, excluirId?: number | string): Promise<SelectDTO[]> {
+  return autocompletarCliente(query, { excluirId })
 }

@@ -4,13 +4,13 @@
 import { SelectDTO } from '@/lib/dto/common.dto'
 import { Combobox, Loader, TextInput, TextInputProps, useCombobox } from '@mantine/core'
 import { useDebouncedCallback } from '@mantine/hooks'
-import { useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 type OmitedProps = 'value' | 'onClick' | 'onFocus' | 'onBlur' | 'rightSection'
 
 interface AsyncAutocomplete extends Omit<TextInputProps, OmitedProps> {
   serverFunction: Function
-  defaultSelect?: SelectDTO
+  defaultItemLabel?: string
   minQueryText?: number
   onSelect?: (value: any) => void
 }
@@ -19,28 +19,80 @@ export function AsyncAutocomplete({
   serverFunction,
   onSelect,
   minQueryText = 3,
-  defaultSelect,
+  defaultValue,
+  defaultItemLabel,
   ...props
 }: AsyncAutocomplete) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   })
-  const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<SelectDTO[] | null>(defaultSelect ? [defaultSelect] : null)
-  const [value, setValue] = useState(defaultSelect?.label || '')
 
-  const fetchOptions = useDebouncedCallback(async (query: string) => {
+  const defaultItemSelect = defaultItemLabel && defaultValue ? { label: defaultItemLabel, value: `${defaultValue}` } : null
+
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<SelectDTO[] | null>(defaultItemSelect ? [defaultItemSelect] : null)
+  const [value, setValue] = useState(defaultItemLabel || '')
+
+  async function fetchOptionsAsync(query: string, defaultVal?: string) {
+    if (query.length < minQueryText && !defaultVal) {
+      return
+    }
+
     setLoading(true)
     try {
-      // Llamamos a la server action; en un entorno real, aquí se consultaría la BD
-      const suggestions = await serverFunction(query, defaultSelect?.value)
-      setData(defaultSelect ? [defaultSelect, ...suggestions] : suggestions)
+      const suggestions: SelectDTO[] = await serverFunction(query, defaultValue)
+      setData(defaultItemSelect ? [defaultItemSelect, ...suggestions] : suggestions)
+
+      if (defaultVal) {
+        const defaultItem = suggestions.find(item => item.value === defaultVal)
+        defaultItem && setValue(defaultItem.label)
+      }
+
     } catch (error) {
       console.error('Error al obtener sugerencias:', error)
     } finally {
       setLoading(false)
     }
-  }, 500)
+  }
+  const fetchOptions = useDebouncedCallback(fetchOptionsAsync, 500)
+
+  // Función que se ejecuta cuando se selecciona una opción
+  function onOptionSubmit(optionValue: string) {
+    const selected = data?.find(item => item.value === optionValue)
+
+    if (props.onChange) {
+      props.onChange(selected?.value as any)
+    }
+
+    setValue(selected?.label || '')
+    onSelect?.(selected)
+
+    combobox.closeDropdown()
+  }
+
+  // Función que se ejecuta cuando se escribe en el campo de texto
+  function onTextChange(event: ChangeEvent<HTMLInputElement>) {
+    const query = event.currentTarget.value
+    setValue(query)
+    fetchOptions(query)
+    combobox.resetSelectedOption()
+    combobox.openDropdown()
+  }
+
+  // Funcion que se ejecuta cuando se le hace focus al campo de texto
+  function onInputFocus() {
+    combobox.openDropdown()
+
+    if (data === null) {
+      fetchOptions(value)
+    }
+  }
+
+  useEffect(() => {
+    if (defaultValue) {
+      fetchOptionsAsync(value, defaultValue.toString())
+    }
+  }, [])
 
   const options = (data || []).map(item => (
     <Combobox.Option value={item.value} key={item.value}>
@@ -50,18 +102,7 @@ export function AsyncAutocomplete({
 
   return (
     <Combobox
-      onOptionSubmit={(optionValue) => {
-        const selected = data?.find(item => item.value === optionValue)
-
-        if (props.onChange) {
-          props.onChange(selected?.value as any)
-        }
-
-        setValue(selected?.label || '')
-        onSelect?.(selected)
-
-        combobox.closeDropdown()
-      }}
+      onOptionSubmit={onOptionSubmit}
       withinPortal={false}
       store={combobox}
     >
@@ -69,22 +110,9 @@ export function AsyncAutocomplete({
         <TextInput
           {...props}
           value={value}
-          onChange={(event) => {
-            const query = event.currentTarget.value
-            setValue(query)
-            fetchOptions(query)
-            combobox.resetSelectedOption()
-            combobox.openDropdown()
-          }}
+          onChange={onTextChange}
           onClick={() => combobox.openDropdown()}
-          onFocus={() => {
-            combobox.openDropdown()
-            console.log('asdasd')
-
-            if (data === null) {
-              fetchOptions(value)
-            }
-          }}
+          onFocus={onInputFocus}
           onBlur={() => combobox.closeDropdown()}
           rightSection={loading && <Loader size={18} />}
         />
@@ -99,12 +127,19 @@ export function AsyncAutocomplete({
   )
 }
 
-export type AsyncAutocompleteComboboxProps = {
-  value?: SelectDTO | null
-  onChange?: (value: SelectDTO | null) => void
-  onBlur?: React.FocusEventHandler<HTMLInputElement>
-  error?: string | boolean
-  label?: string
-  placeholder?: string
-  serverFunction: Function
+export function AsyncAutocompleteFilter({ onSelect, defaultValue, name, ...props }: AsyncAutocomplete) {
+  const [value, setValue] = useState<string>('')
+  return <>
+    <input name={name} value={value || defaultValue || ''} hidden readOnly />
+
+    <AsyncAutocomplete
+      onSelect={(data: SelectDTO) => {
+        setValue(data.value)
+        onSelect?.(data)
+      }}
+      defaultChecked
+      defaultValue={defaultValue?.toString() || ''}
+      {...props}
+    />
+  </>
 }

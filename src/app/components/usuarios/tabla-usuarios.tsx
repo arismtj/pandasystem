@@ -45,9 +45,10 @@ export default async function TablaUsuarios(props: Props) {
               </Tooltip>
             </TableTd>
             <TableTd>{item.id}</TableTd>
+            <TableTd>{item.username}</TableTd>
             <TableTd>{item.nombres}</TableTd>
             <TableTd>{item.apellidos}</TableTd>
-            <TableTd>{item.username}</TableTd>
+            <TableTd>{item.email}</TableTd>
             <TableTd>{item.numeroTelefono}</TableTd>
             <TableTd>{item.nombrePermiso}</TableTd>
           </TableTr>

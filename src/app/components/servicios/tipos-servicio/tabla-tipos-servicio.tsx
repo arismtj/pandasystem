@@ -1,11 +1,12 @@
 import { anularTipoServicioAction } from "@/actions/tiposervicio.actions"
-import { ESTADO_ACTIVO, MAP_FRECUENCIA } from "@/lib/constantes"
+import { ESTADO_ACTIVO, SELECT_FRECUENCIA } from "@/lib/constantes"
 import { FiltroTipoServicioDTO, TipoServicioDTO } from "@/lib/dto/tiposervicio.dto"
 import { listarTipoServiciosPorFiltro } from "@/server/services/tiposervicio.service"
 import { ActionIcon, Table, TableScrollContainer, TableTbody, TableTd, TableTh, TableThead, TableTr, Tooltip } from "@mantine/core"
 import { IconEdit } from "@tabler/icons-react"
 import Link from "next/link"
 import { BotonAnular } from "../../boton-anular"
+import { selectDtoArrayToMap } from "@/lib/utils"
 
 interface Props extends FiltroTipoServicioDTO {
 
@@ -14,6 +15,7 @@ interface Props extends FiltroTipoServicioDTO {
 export const TABLA_PERMISOS_COLS = ['', 'Cod.', 'Nombre', 'Frecuencia', 'Precio Unitario', 'Estado']
 
 export default async function TablaTiposServicio(props: Props) {
+  const mapFrecuencias = selectDtoArrayToMap(SELECT_FRECUENCIA)
 
   const data: TipoServicioDTO[] = await listarTipoServiciosPorFiltro({
     nombre: props.nombre,
@@ -61,7 +63,7 @@ export default async function TablaTiposServicio(props: Props) {
             <TableTd miw={150}>{item.nombre}</TableTd>
 
             {/* @ts-expect-error */}
-            <TableTd miw={150}>{MAP_FRECUENCIA[item.frecuencia]}</TableTd>
+            <TableTd miw={150}>{mapFrecuencias.get(item.frecuenciaServicio)}</TableTd>
 
             <TableTd miw={150}>{item.precioUnitario}</TableTd>
             <TableTd>{item.estado === ESTADO_ACTIVO ? 'Activo' : 'Inactivo'}</TableTd>

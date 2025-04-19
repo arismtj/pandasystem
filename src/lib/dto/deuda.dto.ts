@@ -16,10 +16,15 @@ export const DeudaSchemaDTO = object({
 })
 
 export type DeudaDTO = InferType<typeof DeudaSchemaDTO> & {
+  nombreCliente?: string
+  nombreTipoServicio?: string
   fechaCreacion?: Date
 }
 
 export interface FiltroDeudaDTO extends PaginacionDTO {
+  idServicio?: string | number
+  idCliente?: string | number
   fechaCreacion?: string
   ultimoPago?: string
+  estado?: string
 }

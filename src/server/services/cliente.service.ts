@@ -3,9 +3,9 @@ import { clienteTable } from "@/db/schemas/cliente"
 import { zonaTable } from "@/db/schemas/zona"
 import { ESTADO_ACTIVO, ESTADO_INACTIVO } from "@/lib/constantes"
 import { ClienteDTO, FiltroClienteDTO } from "@/lib/dto/cliente.dto"
-import { SelectDTO } from "@/lib/dto/common.dto"
+import { SelectDTO, SelectOptions } from "@/lib/dto/common.dto"
 import { eliminarArchivo, guardarArchivo } from "@/lib/files.utils"
-import { and, count, eq, like, ne, sql, SQL } from "drizzle-orm"
+import { and, count, eq, like, ne, or, sql, SQL } from "drizzle-orm"
 import { User } from "next-auth"
 
 export async function obtenerClientePorId(idCliente: number): Promise<ClienteDTO | null> {
@@ -35,14 +35,20 @@ export async function obtenerClientePorId(idCliente: number): Promise<ClienteDTO
   return null
 }
 
-interface ClienteSelectOpts {
-  excluirId?: number | string
-  soloActivos?: boolean
-}
-export async function listarClientesSelect(filtro: string, { excluirId, soloActivos = false }: ClienteSelectOpts): Promise<SelectDTO[]> {
-  const where: SQL[] = [
-    like(sql`concat(${clienteTable.nombres}, ' ', ${clienteTable.apellidos})`, `%${filtro}%`)
-  ]
+export async function listarClientesSelect(filtro: string, { excluirId, incluirId, soloActivos = false }: SelectOptions): Promise<SelectDTO[]> {
+  const where: SQL[] = []
+
+  if (incluirId) {
+    const condicionOr = or(
+      like(sql`concat(${clienteTable.nombres}, ' ', ${clienteTable.apellidos})`, `%${filtro}%`),
+      eq(clienteTable.id, +incluirId)
+    )
+    where.push(condicionOr!)
+  } else {
+    where.push(like(sql`concat(${clienteTable.nombres}, ' ', ${clienteTable.apellidos})`, `%${filtro}%`))
+  }
+
+  // otras cosas
 
   if (excluirId) {
     where.push(ne(clienteTable.id, +excluirId))

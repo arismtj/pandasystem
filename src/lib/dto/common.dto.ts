@@ -22,3 +22,9 @@ export interface SelectDTO {
 export interface SelectDTO2 extends SelectDTO {
   extras: any
 }
+
+export interface SelectOptions {
+  excluirId?: number | string
+  incluirId?: number | string
+  soloActivos?: boolean
+}

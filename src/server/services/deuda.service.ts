@@ -1,8 +1,11 @@
 import { DB } from "@/db/drizzle"
+import { clienteTable } from "@/db/schemas/cliente"
 import { deudaTable } from "@/db/schemas/deuda"
+import { servicioTable } from "@/db/schemas/servicios"
+import { tiposervicioTable } from "@/db/schemas/tiposervicio"
 import { ESTADO_INACTIVO } from "@/lib/constantes"
 import { DeudaDTO, FiltroDeudaDTO } from "@/lib/dto/deuda.dto"
-import { and, count, eq, SQL } from "drizzle-orm"
+import { and, count, eq, sql, SQL } from "drizzle-orm"
 import { User } from "next-auth"
 
 
@@ -69,7 +72,12 @@ export async function listarDeudasPorFiltro(filtros: FiltroDeudaDTO): Promise<De
     ultimoPago: deudaTable.ultimoPago,
 
     idServicio: deudaTable.idServicio,
+    nombreTipoServicio: tiposervicioTable.nombre,
+    nombreCliente: sql<string>`concat(${clienteTable.nombres}, ' ', ${clienteTable.apellidos})`,
   }).from(deudaTable)
+    .innerJoin(servicioTable, eq(servicioTable.id, deudaTable.idServicio))
+    .innerJoin(tiposervicioTable, eq(tiposervicioTable.id, servicioTable.idTipoServicio))
+    .innerJoin(clienteTable, eq(clienteTable.id, servicioTable.idCliente))
   return data
 }
 

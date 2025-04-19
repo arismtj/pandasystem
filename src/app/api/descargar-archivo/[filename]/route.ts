@@ -2,16 +2,17 @@
 import { descargarArchivo } from '@/lib/files.utils'
 
 interface Params {
-  params: { filename: string }
+  params: Promise<{ filename: string }>
 }
 
-export async function GET(req: Request, { params }: Params) {
-  const fileBuffer = await descargarArchivo(params.filename)
+export async function GET(_req: Request, { params }: Params) {
+  const { filename } = await params
+  const fileBuffer = await descargarArchivo(filename)
 
   return new Response(fileBuffer, {
     headers: {
       'Content-Type': 'application/octet-stream',
-      'Content-Disposition': `attachment; filename="${params.filename}"`,
+      'Content-Disposition': `attachment; filename="${filename}"`,
     },
   })
 }

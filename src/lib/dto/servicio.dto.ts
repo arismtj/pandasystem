@@ -1,5 +1,5 @@
 import { date, InferType, number, object, string } from "yup"
-import { CAMPO_REQUERIDO, ESTADO_ACTIVO, FECHA_INVALIDA, IP_V4_REGEX, MAP_ESTADO_DEUDA, MONTO_INVALIDO, NUMERO_INVALIDO } from "../constantes"
+import { CAMPO_REQUERIDO, ESTADO_ACTIVO, FECHA_INVALIDA, IP_V4_REGEX, MONTO_INVALIDO, NUMERO_INVALIDO } from "../constantes"
 import { PaginacionDTO } from "./common.dto"
 
 export const ServicioSchemaDTO = object({
